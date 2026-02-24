@@ -3,6 +3,8 @@ import "./HomeAll.scss";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, ChevronDown, ArrowRight, Instagram, Music2 } from "lucide-react";
 import Image from '../../image/Logo.png'
+import { Link } from "react-router";
+
 const TRANSLATIONS = {
   EN: {
     nav: { logo: "INSIGHT" },
