@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./HomeAll.scss";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, ChevronDown, ArrowRight, Instagram, Music2 } from "lucide-react";
-
+import Image from '../../image/Logo.png'
 const TRANSLATIONS = {
   EN: {
     nav: { logo: "INSIGHT" },
@@ -116,7 +116,7 @@ function HomeAll() {
             </div>
             <div className="hero-img">
               <div className="img-frame">
-                <img src="https://picsum.photos/seed/tech-insight/1200/900" alt="Hero" />
+                <img src={Image} alt="Hero" />
               </div>
             </div>
           </div>
