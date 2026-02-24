@@ -1,0 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&display=swap");
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg, #0b0b0b);
+  padding: 20px; // Mobildə kənarlardan minimum məsafə
+  font-family: "Montserrat", sans-serif;
+  transition: background 0.3s ease;
+
+  .login-card {
+    background: var(--card, #161719);
+    width: 100%;
+    max-width: 420px; // Maksimum en
+    padding: 50px 40px;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--input, #1c1e21);
+    display: flex;
+    flex-direction: column;
+    animation: loginFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+
+    // PLANŞET VƏ MOBİL ÜÇÜN (768px-dən kiçik)
+    @media (max-width: 768px) {
+      padding: 45px 30px;
+      max-width: 380px;
+    }
+
+    // KİÇİK MOBİL ÜÇÜN (480px-dən kiçik)
+    @media (max-width: 480px) {
+      padding: 40px 20px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+
+      h2 {
+        color: var(--text, #c8a75e);
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+
+        @media (max-width: 480px) {
+          font-size: 24px;
+        }
+      }
+
+      p {
+        color: var(--text);
+        opacity: 0.6;
+        font-size: 14px;
+        line-height: 1.5;
+
+        @media (max-width: 480px) {
+          font-size: 13px;
+        }
+      }
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+          font-size: 11px;
+          font-weight: 700;
+          color: var(--text);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          margin-left: 4px;
+        }
+
+        .input-field {
+          position: relative;
+          display: flex;
+          align-items: center;
+
+          .icon {
+            position: absolute;
+            left: 16px;
+            color: var(--text);
+            opacity: 0.4;
+            font-size: 20px;
+          }
+
+          input {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            background: var(--input, #1c1e21);
+            border: 1px solid rgba(200, 167, 94, 0.1);
+            border-radius: 14px;
+            color: var(--text);
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+
+            @media (max-width: 480px) {
+              padding: 14px 14px 14px 45px;
+              font-size: 14px;
+            }
+
+            &:focus {
+              border-color: var(--text, #c8a75e);
+              background: var(--sub-bg, #111214);
+              box-shadow: 0 0 0 4px rgba(200, 167, 94, 0.05);
+            }
+
+            &::placeholder {
+              color: var(--text);
+              opacity: 0.2;
+            }
+          }
+
+          .eye-btn {
+            position: absolute;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text);
+            opacity: 0.4;
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            transition: opacity 0.2s;
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+      }
+
+      .login-btn {
+        margin-top: 10px;
+        padding: 18px;
+        background: var(--text, #c8a75e);
+        color: var(--bg, #0b0b0b);
+        border: none;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        @media (max-width: 480px) {
+          padding: 16px;
+          font-size: 14px;
+        }
+
+        &:hover {
+          opacity: 0.95;
+          transform: translateY(-3px);
+          box-shadow: 0 12px 25px rgba(200, 167, 94, 0.25);
+        }
+
+        &:active {
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    .created-by {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      color: var(--text);
+      font-weight: 400;
+
+      .link {
+        font-weight: 800;
+        color: var(--text);
+        text-decoration: none;
+        margin-left: 4px;
+        border-bottom: 1px solid rgba(200, 167, 94, 0.3);
+        transition: all 0.3s;
+
+        &:hover {
+          opacity: 1;
+          border-bottom-color: var(--text);
+        }
+      }
+    }
+  }
+}
+
+@keyframes loginFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

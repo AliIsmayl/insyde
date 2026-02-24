@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./HomeAll.scss";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, ChevronDown, ArrowRight, Instagram, Music2 } from "lucide-react";
-import Image from '../../image/Logo.png'
+import { Sun, Moon, ChevronDown, Instagram, Music2 } from "lucide-react";
+import Image from '../../image/Logo.png';
 import { Link } from "react-router";
 
 const TRANSLATIONS = {
@@ -75,14 +75,30 @@ const TRANSLATIONS = {
 };
 
 function HomeAll() {
-  const [lang, setLang] = useState("EN");
-  const [isDark, setIsDark] = useState(false);
-  const [openFaq, setOpenFaq] = useState(0);
+  // 1. Dil seçimini localda saxla və ya AZ olaraq başlat
+  const [lang, setLang] = useState(() => {
+    const savedLang = localStorage.getItem("app-lang");
+    return savedLang || "AZ"; 
+  });
 
+  // 2. Temanı localda saxla və ya DARK (true) olaraq başlat
+  const [isDark, setIsDark] = useState(() => {
+    const savedTheme = localStorage.getItem("app-theme");
+    return savedTheme !== null ? JSON.parse(savedTheme) : true; 
+  });
+
+  const [openFaq, setOpenFaq] = useState(0);
   const t = TRANSLATIONS[lang];
 
+  // Dil dəyişəndə local-a yaz
+  useEffect(() => {
+    localStorage.setItem("app-lang", lang);
+  }, [lang]);
+
+  // Tema dəyişəndə body class-ını və local-ı yenilə
   useEffect(() => {
     document.body.className = isDark ? "dark-theme" : "light-theme";
+    localStorage.setItem("app-theme", JSON.stringify(isDark));
   }, [isDark]);
 
   return (
@@ -108,7 +124,6 @@ function HomeAll() {
       </nav>
 
       <main>
-        {/* HERO SECTION */}
         <section className="hero-section">
           <div className="container flex-row">
             <div className="hero-text">
@@ -124,7 +139,6 @@ function HomeAll() {
           </div>
         </section>
 
-        {/* HOW IT WORKS SECTION */}
         <section className="steps-section">
           <div className="container">
             <div className="section-header">
@@ -151,7 +165,6 @@ function HomeAll() {
           </div>
         </section>
 
-        {/* FAQ SECTION */}
         <section className="faq-section">
           <div className="container">
             <div className="section-header">
@@ -160,11 +173,7 @@ function HomeAll() {
             </div>
             <div className="faq-full-grid">
               {t.faq.items.map((f, i) => (
-                <div 
-                  key={i} 
-                  className={`faq-card ${openFaq === i ? "active" : ""}`} 
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                >
+                <div key={i} className={`faq-card ${openFaq === i ? "active" : ""}`} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   <div className="faq-q">
                     {f.q} <ChevronDown className="icon" size={24} />
                   </div>
@@ -187,7 +196,6 @@ function HomeAll() {
           </div>
         </section>
 
-        {/* CONTACT SECTION */}
         <section className="contact-section">
           <div className="container">
             <div className="section-header center">
@@ -205,39 +213,27 @@ function HomeAll() {
         </section>
       </main>
 
-      {/* FOOTER */}
-   <footer className="footer-premium">
-  <div className="container footer-content">
-    {/* Sol Ornament */}
-    <div className="ornament desktop-only">
-      <span className="dot"></span>
-      <span className="line"></span>
-      <span className="dot"></span>
-    </div>
-
-    <div className="footer-main">
-      <span className="footer-logo">INSYDE</span>
-      
-      {/* Sosial Media Linkləri */}
-      <div className="social-links">
-        <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" className="social-icon">
-          <Instagram size={20} />
-        </a>
-        <a href="https://tiktok.com/@yourprofile" target="_blank" rel="noopener noreferrer" className="social-icon">
-          <Music2 size={20} /> {/* TikTok üçün Music2 və ya TikTok ikonu */}
-        </a>
-      </div>
-    </div>
-
-    {/* Sağ Ornament */}
-    <div className="ornament desktop-only">
-      <span className="dot"></span>
-      <span className="line"></span>
-      <span className="dot"></span>
-    </div>
-  </div>
-</footer>
-
+      <footer className="footer-premium">
+        <div className="container footer-content">
+          <div className="ornament desktop-only">
+            <span className="dot"></span><span className="line"></span><span className="dot"></span>
+          </div>
+          <div className="footer-main">
+            <span className="footer-logo">INSYDE</span>
+            <div className="social-links">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+                <Instagram size={20} />
+              </a>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="social-icon">
+                <Music2 size={20} />
+              </a>
+            </div>
+          </div>
+          <div className="ornament desktop-only">
+            <span className="dot"></span><span className="line"></span><span className="dot"></span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
