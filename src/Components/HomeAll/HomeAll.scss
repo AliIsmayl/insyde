@@ -76,12 +76,12 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     .lang-switcher {
       background: rgba(125, 125, 125, 0.1);
       padding: 6px;
-      border-radius: 40px;
+      border-radius: 12px;
       button {
         border: none;
         background: none;
         padding: 6px 18px;
-        border-radius: 30px;
+        border-radius: 8px;
         color: var(--text);
         cursor: pointer;
         opacity: 0.5;
@@ -99,7 +99,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       border: none;
       width: 52px;
       height: 30px;
-      border-radius: 20px;
+      border-radius: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -176,7 +176,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     .img-frame {
       width: 100%;
       aspect-ratio: 4/3;
-      border-radius: 40px;
+      border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 40px 80px rgba(0, 0, 0, 0.1);
       img {
@@ -213,7 +213,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   .step-card {
     background: var(--bg);
     padding: 60px 40px;
-    border-radius: 35px;
+    border-radius: 12px;
     position: relative;
     overflow: hidden;
     transition: $transition;
@@ -268,7 +268,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .faq-card {
     background: var(--card);
-    border-radius: 25px;
+    border-radius: 12px;
     padding: 35px 45px;
     cursor: pointer;
     transition: 0.3s;
@@ -337,7 +337,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       textarea {
         background: var(--bg);
         border: none;
-        border-radius: 20px;
+        border-radius: 12px;
         padding: 25px 30px;
         font-size: 1.1rem;
         color: var(--text);
@@ -353,7 +353,7 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       background: var(--text);
       color: var(--bg);
       padding: 25px;
-      border-radius: 20px;
+      border-radius: 12px;
       font-size: 1.2rem;
       font-weight: 400;
       border: none;
@@ -384,7 +384,6 @@ $transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     .footer-logo {
       font-size: 1.2rem;
       font-weight: 600;
-      letter-spacing: 6px;
       text-transform: uppercase;
       color: var(--text);
       opacity: 0.4;

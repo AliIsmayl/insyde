@@ -91,7 +91,7 @@ function HomeAll() {
       <nav className="navbar-fixed">
         <div className="container nav-flex">
           <div className="logo">
-            <span>{t.nav.logo}</span>
+            <span>INSYDE</span>
           </div>
           <div className="actions">
             <div className="lang-switcher">
@@ -216,7 +216,7 @@ function HomeAll() {
     </div>
 
     <div className="footer-main">
-      <span className="footer-logo">{t.nav.logo}</span>
+      <span className="footer-logo">INSYDE</span>
       
       {/* Sosial Media Linkləri */}
       <div className="social-links">

@@ -46,10 +46,10 @@ button {
 body.light-theme {
   --bg: #fffefc;
   --text: #c8a75e;
-  --card: #e1e3e6;
+  --card: #eceef1;
   --nav: rgba(242, 243, 245, 0.85);
   --input: #e1e3e6;
-  --sub-bg: #e8eaed;
+  --sub-bg: #f1f3f5;
 }
 
 body.dark-theme {
