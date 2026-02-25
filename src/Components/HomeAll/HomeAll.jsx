@@ -11,8 +11,7 @@ const TRANSLATIONS = {
     hero: {
       title: "Premium Digital Card",
       subtitle: "Share your social media, portfolio, and contact information with just a single tap."},
-    how: {
-      title: "How It Works",
+    how: {title: "How It Works",
       steps: [
         { id: "01", title: "Discover", description: "We analyze your business needs and identify opportunities." },
         { id: "02", title: "Design", description: "Our team crafts elegant solutions tailored to your requirements." },
@@ -40,11 +39,9 @@ const TRANSLATIONS = {
   },
   AZ: {
     nav: { logo: "İNSAYT" },
-    hero: {
-      title: "Premium Rəqəmsal Kart",
+    hero: {title: "Premium Rəqəmsal Kart",
       subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün."},
-    how: {
-      title: "Necə İşləyir",
+    how: {title: "Necə İşləyir",
       steps: [
         { id: "01", title: "Kəşf et", description: "Biz sizin biznes ehtiyaclarınızı təhlil edirik." },
         { id: "02", title: "Dizayn", description: "Komandamız sizə uyğun zərif həllər hazırlayır." },
