@@ -15,6 +15,9 @@ import {
   AiOutlineSave,
   AiOutlineExclamationCircle,
   AiOutlineQuestionCircle,
+  AiOutlineUserAdd,
+  AiOutlineUp,
+  AiOutlineDown,
 } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
 import "./SuperAdmin.scss";
@@ -55,7 +58,16 @@ function SuperAdmin() {
     isEditing: false,
   });
 
+  const [newLinkForm, setNewLinkForm] = useState({});
   const [expandedUser, setExpandedUser] = useState(null);
+  const [showNewUserForm, setShowNewUserForm] = useState(false);
+
+  const [newUserForm, setNewUserForm] = useState({
+    fullName: "",
+    userCode: "",
+    password: "",
+  });
+
   const [modal, setModal] = useState({
     isOpen: false,
     type: null,
@@ -64,6 +76,16 @@ function SuperAdmin() {
     step: 1,
     tempData: null,
   });
+
+  const closeModal = () =>
+    setModal({
+      isOpen: false,
+      type: null,
+      data: null,
+      action: "",
+      step: 1,
+      tempData: null,
+    });
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("app-theme");
@@ -79,16 +101,18 @@ function SuperAdmin() {
     return <IconComponent />;
   };
 
+  // ─── Social Submit ────────────────────────────────────
   const handleSocialSubmit = (e) => {
     e.preventDefault();
     if (socialForm.isEditing) {
-      setSocials(
-        socials.map((s) =>
-          s.id === socialForm.id
-            ? { ...s, name: socialForm.name, iconCode: socialForm.iconCode }
-            : s,
-        ),
-      );
+      setModal({
+        isOpen: true,
+        type: "social",
+        action: "edit",
+        data: socialForm,
+        tempData: { name: socialForm.name, iconCode: socialForm.iconCode },
+        step: 1,
+      });
     } else {
       setSocials([
         ...socials,
@@ -98,12 +122,14 @@ function SuperAdmin() {
           iconCode: socialForm.iconCode,
         },
       ]);
+      setSocialForm({ id: null, name: "", iconCode: "", isEditing: false });
     }
-    setSocialForm({ id: null, name: "", iconCode: "", isEditing: false });
   };
 
+  // ─── Final Confirm ────────────────────────────────────
   const handleFinalConfirm = () => {
     const { type, data, action, tempData } = modal;
+
     if (type === "user") {
       if (action === "delete") setUsers(users.filter((u) => u.id !== data.id));
       if (action === "block")
@@ -113,14 +139,36 @@ function SuperAdmin() {
           ),
         );
       if (action === "edit")
-        setUsers(users.map((u) => (u.id === data.id ? tempData : u)));
-    } else if (type === "social" && action === "delete") {
-      setSocials(socials.filter((s) => s.id !== data.id));
+        setUsers(
+          users.map((u) => (u.id === data.id ? { ...u, ...tempData } : u)),
+        );
     }
-    setModal({ ...modal, isOpen: false });
+
+    if (type === "social") {
+      if (action === "delete")
+        setSocials(socials.filter((s) => s.id !== data.id));
+      if (action === "edit") {
+        setSocials(
+          socials.map((s) =>
+            s.id === data.id
+              ? { ...s, name: tempData.name, iconCode: tempData.iconCode }
+              : s,
+          ),
+        );
+        setSocialForm({ id: null, name: "", iconCode: "", isEditing: false });
+      }
+    }
+
+    if (type === "link") {
+      if (action === "delete") removeUserLinkDirect(data.userId, data.platform);
+      if (action === "edit") toggleLinkEditDirect(data.userId, data.platform);
+    }
+
+    closeModal();
   };
 
-  const toggleLinkEdit = (userId, platform) => {
+  // ─── Link helpers ─────────────────────────────────────
+  const toggleLinkEditDirect = (userId, platform) => {
     setUsers(
       users.map((u) =>
         u.id === userId
@@ -130,6 +178,21 @@ function SuperAdmin() {
                 sl.platform === platform
                   ? { ...sl, isEditing: !sl.isEditing }
                   : sl,
+              ),
+            }
+          : u,
+      ),
+    );
+  };
+
+  const removeUserLinkDirect = (userId, platform) => {
+    setUsers(
+      users.map((u) =>
+        u.id === userId
+          ? {
+              ...u,
+              socialLinks: u.socialLinks.filter(
+                (sl) => sl.platform !== platform,
               ),
             }
           : u,
@@ -152,6 +215,62 @@ function SuperAdmin() {
     );
   };
 
+  const saveLinkEdit = (userId, platform) => {
+    setUsers(
+      users.map((u) =>
+        u.id === userId
+          ? {
+              ...u,
+              socialLinks: u.socialLinks.map((sl) =>
+                sl.platform === platform ? { ...sl, isEditing: false } : sl,
+              ),
+            }
+          : u,
+      ),
+    );
+  };
+
+  const addNewLink = (userId, platform, link) => {
+    if (!platform.trim() || !link.trim()) return;
+    setUsers(
+      users.map((u) =>
+        u.id === userId
+          ? {
+              ...u,
+              socialLinks: [
+                ...u.socialLinks,
+                { platform, link, isEditing: false },
+              ],
+            }
+          : u,
+      ),
+    );
+    setNewLinkForm((prev) => ({
+      ...prev,
+      [userId]: { platform: "", link: "" },
+    }));
+  };
+
+  // ─── Yeni İstifadəçi ─────────────────────────────────
+  const handleAddUser = (e) => {
+    e.preventDefault();
+    if (!newUserForm.fullName.trim()) return;
+    const newUser = {
+      id: Date.now(),
+      fullName: newUserForm.fullName,
+      userCode:
+        newUserForm.userCode ||
+        `USR-${Math.floor(1000 + Math.random() * 9000)}`,
+      username: newUserForm.fullName.toLowerCase().replace(/\s+/g, ""),
+      password: newUserForm.password || "",
+      isBlocked: false,
+      socialLinks: [],
+    };
+    setUsers([...users, newUser]);
+    setNewUserForm({ fullName: "", userCode: "", password: "" });
+    setShowNewUserForm(false);
+  };
+
   return (
     <div className="super-admin">
       <div className="sa-container">
@@ -161,7 +280,7 @@ function SuperAdmin() {
         </header>
 
         <div className="sa-grid">
-          {/* Platformalar Bölməsi */}
+          {/* ── Platformalar ── */}
           <section className="sa-section">
             <div className="section-header">
               <h3>
@@ -228,7 +347,16 @@ function SuperAdmin() {
                   </div>
                   <div className="actions">
                     <button
-                      onClick={() => setSocialForm({ ...s, isEditing: true })}
+                      onClick={() =>
+                        setModal({
+                          isOpen: true,
+                          type: "social",
+                          action: "edit",
+                          data: s,
+                          tempData: { name: s.name, iconCode: s.iconCode },
+                          step: 1,
+                        })
+                      }
                       className="edit-btn"
                     >
                       <AiOutlineEdit />
@@ -240,6 +368,7 @@ function SuperAdmin() {
                           type: "social",
                           data: s,
                           action: "delete",
+                          step: 1,
                         })
                       }
                       className="del-btn"
@@ -252,14 +381,108 @@ function SuperAdmin() {
             </div>
           </section>
 
-          {/* İstifadəçi Bazası Bölməsi */}
+          {/* ── İstifadəçi Bazası ── */}
           <section className="sa-section">
             <div className="section-header">
               <h3>
                 <AiOutlineUser /> İstifadəçi Bazası{" "}
                 <span>({users.length})</span>
               </h3>
+              {/* Yeni istifadəçi toggle */}
+              <button
+                className="add-user-toggle"
+                onClick={() => setShowNewUserForm((v) => !v)}
+              >
+                {showNewUserForm ? (
+                  <>
+                    <AiOutlineUp /> Bağla
+                  </>
+                ) : (
+                  <>
+                    <AiOutlineUserAdd /> Yeni İstifadəçi
+                  </>
+                )}
+              </button>
             </div>
+
+            {/* Yeni İstifadəçi Formu */}
+            <AnimatePresence>
+              {showNewUserForm && (
+                <motion.div
+                  className="new-user-inline"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.22 }}
+                >
+                  <form className="new-user-form" onSubmit={handleAddUser}>
+                    <div className="new-user-grid">
+                      <div className="field">
+                        <label>
+                          Ad Soyad <span className="req">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Əli Məmmədov"
+                          required
+                          value={newUserForm.fullName}
+                          onChange={(e) =>
+                            setNewUserForm({
+                              ...newUserForm,
+                              fullName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>
+                          User Code{" "}
+                          <span className="optional">(avtomatik)</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="USR-XXXX"
+                          value={newUserForm.userCode}
+                          onChange={(e) =>
+                            setNewUserForm({
+                              ...newUserForm,
+                              userCode: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="field">
+                        <label>Parol</label>
+                        <input
+                          type="text"
+                          placeholder="••••••"
+                          value={newUserForm.password}
+                          onChange={(e) =>
+                            setNewUserForm({
+                              ...newUserForm,
+                              password: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="new-user-actions">
+                      <button
+                        type="button"
+                        className="cancel-inline-btn"
+                        onClick={() => setShowNewUserForm(false)}
+                      >
+                        İmtina
+                      </button>
+                      <button type="submit" className="submit-inline-btn">
+                        <AiOutlineUserAdd /> Yarat
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="sa-list scrollable">
               {users.map((u) => (
                 <div
@@ -290,6 +513,7 @@ function SuperAdmin() {
                             type: "user",
                             data: u,
                             action: "block",
+                            step: 1,
                           })
                         }
                         className={`action-btn block ${u.isBlocked ? "is-unblock" : ""}`}
@@ -304,6 +528,7 @@ function SuperAdmin() {
                             data: u,
                             action: "edit",
                             step: 1,
+                            tempData: null,
                           })
                         }
                         className="action-btn edit"
@@ -317,6 +542,7 @@ function SuperAdmin() {
                             type: "user",
                             data: u,
                             action: "delete",
+                            step: 1,
                           })
                         }
                         className="action-btn del"
@@ -325,6 +551,7 @@ function SuperAdmin() {
                       </button>
                     </div>
                   </div>
+
                   <AnimatePresence>
                     {expandedUser === u.id && (
                       <motion.div
@@ -336,6 +563,7 @@ function SuperAdmin() {
                       >
                         <div className="links-editor-container">
                           <h5>Linkləri Redaktə Et</h5>
+
                           {u.socialLinks.map((sl, i) => (
                             <div key={i} className="link-row">
                               <span className="label">{sl.platform}:</span>
@@ -354,7 +582,7 @@ function SuperAdmin() {
                                   />
                                   <button
                                     onClick={() =>
-                                      toggleLinkEdit(u.id, sl.platform)
+                                      saveLinkEdit(u.id, sl.platform)
                                     }
                                     className="save-link-btn"
                                     title="Yadda saxla"
@@ -372,20 +600,106 @@ function SuperAdmin() {
                                   >
                                     {sl.link}
                                   </a>
-                                  <button
-                                    onClick={() =>
-                                      toggleLinkEdit(u.id, sl.platform)
-                                    }
-                                    className="mini-edit-btn"
-                                    title="Redaktə et"
-                                  >
-                                    <AiOutlineEdit />
-                                    <span>Redaktə</span>
-                                  </button>
+                                  <div className="link-actions">
+                                    {/* Edit → modal */}
+                                    <button
+                                      onClick={() =>
+                                        setModal({
+                                          isOpen: true,
+                                          type: "link",
+                                          action: "edit",
+                                          data: {
+                                            userId: u.id,
+                                            platform: sl.platform,
+                                          },
+                                          step: 1,
+                                        })
+                                      }
+                                      className="mini-edit-btn"
+                                      title="Redaktə et"
+                                    >
+                                      <AiOutlineEdit />
+                                      <span>Redaktə</span>
+                                    </button>
+                                    {/* Delete → modal */}
+                                    <button
+                                      onClick={() =>
+                                        setModal({
+                                          isOpen: true,
+                                          type: "link",
+                                          action: "delete",
+                                          data: {
+                                            userId: u.id,
+                                            platform: sl.platform,
+                                          },
+                                          step: 1,
+                                        })
+                                      }
+                                      className="mini-del-btn"
+                                      title="Sil"
+                                    >
+                                      <AiOutlineDelete />
+                                    </button>
+                                  </div>
                                 </div>
                               )}
                             </div>
                           ))}
+
+                          {/* Yeni Link Əlavə Et */}
+                          <div className="add-link-form">
+                            <h6>Yeni Link Əlavə Et</h6>
+                            <div className="add-link-inputs">
+                              <select
+                                value={newLinkForm[u.id]?.platform || ""}
+                                onChange={(e) =>
+                                  setNewLinkForm((prev) => ({
+                                    ...prev,
+                                    [u.id]: {
+                                      ...prev[u.id],
+                                      platform: e.target.value,
+                                    },
+                                  }))
+                                }
+                              >
+                                <option value="" disabled>
+                                  Platforma seç
+                                </option>
+                                {socials.map((s) => (
+                                  <option key={s.id} value={s.name}>
+                                    {s.name}
+                                  </option>
+                                ))}
+                              </select>
+                              <input
+                                type="text"
+                                placeholder="Link (məs: https://...)"
+                                value={newLinkForm[u.id]?.link || ""}
+                                onChange={(e) =>
+                                  setNewLinkForm((prev) => ({
+                                    ...prev,
+                                    [u.id]: {
+                                      ...prev[u.id],
+                                      link: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                              <button
+                                className="add-link-btn"
+                                onClick={() =>
+                                  addNewLink(
+                                    u.id,
+                                    newLinkForm[u.id]?.platform || "",
+                                    newLinkForm[u.id]?.link || "",
+                                  )
+                                }
+                              >
+                                <AiOutlinePlus />
+                                <span>Əlavə Et</span>
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -404,13 +718,12 @@ function SuperAdmin() {
         </div>
       </div>
 
-      {/* MODALLAR */}
+      {/* ══ MODALLAR ══════════════════════════════════════ */}
       {modal.isOpen && (
         <div
           className="sa-modal-overlay"
           onClick={(e) =>
-            e.target.classList.contains("sa-modal-overlay") &&
-            setModal({ isOpen: false })
+            e.target.classList.contains("sa-modal-overlay") && closeModal()
           }
         >
           <motion.div
@@ -420,74 +733,165 @@ function SuperAdmin() {
             exit={{ opacity: 0, scale: 0.85, y: 30 }}
             transition={{ duration: 0.2 }}
           >
-            <button
-              className="close-x"
-              onClick={() => setModal({ isOpen: false })}
-              aria-label="Bağla"
-            >
+            <button className="close-x" onClick={closeModal} aria-label="Bağla">
               <AiOutlineClose />
             </button>
 
-            {modal.action === "edit" ? (
-              <div className="modal-content">
-                <h4>Redaktə Et</h4>
-                <div className="modal-form">
-                  <div className="field">
-                    <label>Ad Soyad</label>
-                    <input
-                      type="text"
-                      defaultValue={modal.data.fullName}
-                      id="edit-name"
-                    />
+            {/* ── User Edit — Step 1 (Form) ── */}
+            {modal.type === "user" &&
+              modal.action === "edit" &&
+              modal.step === 1 && (
+                <div className="modal-content">
+                  <h4>İstifadəçini Redaktə Et</h4>
+                  <div className="modal-form">
+                    <div className="field">
+                      <label>Ad Soyad</label>
+                      <input
+                        type="text"
+                        defaultValue={modal.data.fullName}
+                        id="edit-name"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>User Code</label>
+                      <input
+                        type="text"
+                        defaultValue={modal.data.userCode}
+                        id="edit-code"
+                      />
+                    </div>
+                    <div className="confirm-btns">
+                      <button className="cancel-btn" onClick={closeModal}>
+                        İmtina
+                      </button>
+                      <button
+                        className="confirm-btn next-btn"
+                        onClick={() =>
+                          setModal({
+                            ...modal,
+                            step: 2,
+                            tempData: {
+                              fullName:
+                                document.getElementById("edit-name").value,
+                              userCode:
+                                document.getElementById("edit-code").value,
+                            },
+                          })
+                        }
+                      >
+                        Davam Et
+                      </button>
+                    </div>
                   </div>
-                  <div className="field">
-                    <label>User Code</label>
-                    <input
-                      type="text"
-                      defaultValue={modal.data.userCode}
-                      id="edit-code"
-                    />
+                </div>
+              )}
+
+            {/* ── User Edit — Step 2 (Confirm) ── */}
+            {modal.type === "user" &&
+              modal.action === "edit" &&
+              modal.step === 2 && (
+                <div className="modal-content confirm">
+                  <div className="warning-icon warn">
+                    <AiOutlineExclamationCircle />
                   </div>
+                  <h4>Dəyişikliyi Təsdiqlə</h4>
+                  <p>Məlumatlar yenilənəcək. Davam etmək istəyirsiniz?</p>
                   <div className="confirm-btns">
-                    <button
-                      className="cancel-btn"
-                      onClick={() => setModal({ isOpen: false })}
-                    >
+                    <button className="cancel-btn" onClick={closeModal}>
                       İmtina
                     </button>
                     <button
                       className="confirm-btn next-btn"
-                      onClick={() =>
-                        setModal({
-                          ...modal,
-                          step: 2,
-                          tempData: {
-                            ...modal.data,
-                            fullName:
-                              document.getElementById("edit-name").value,
-                            userCode:
-                              document.getElementById("edit-code").value,
-                          },
-                        })
-                      }
+                      onClick={handleFinalConfirm}
                     >
-                      Yadda Saxla
+                      Bəli, Yenilə
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            {/* ── Social Edit Modal ── */}
+            {modal.type === "social" && modal.action === "edit" && (
+              <div className="modal-content">
+                <h4>Platformanı Redaktə Et</h4>
+                <div className="modal-form">
+                  <div className="field">
+                    <label>Platforma Adı</label>
+                    <input
+                      type="text"
+                      value={modal.tempData?.name || ""}
+                      onChange={(e) =>
+                        setModal((prev) => ({
+                          ...prev,
+                          tempData: { ...prev.tempData, name: e.target.value },
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="field">
+                    <label>React Icon Kodu</label>
+                    <input
+                      type="text"
+                      value={modal.tempData?.iconCode || ""}
+                      onChange={(e) =>
+                        setModal((prev) => ({
+                          ...prev,
+                          tempData: {
+                            ...prev.tempData,
+                            iconCode: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                  </div>
+                  {modal.tempData?.iconCode && (
+                    <div className="icon-preview-area modal-preview">
+                      <small>Önizləmə:</small>
+                      <div className="preview-item">
+                        <DynamicIcon iconName={modal.tempData.iconCode} />
+                      </div>
+                    </div>
+                  )}
+                  <div className="confirm-btns">
+                    <button className="cancel-btn" onClick={closeModal}>
+                      İmtina
+                    </button>
+                    <button
+                      className="confirm-btn next-btn"
+                      onClick={handleFinalConfirm}
+                    >
+                      <AiOutlineCheck /> Yenilə
                     </button>
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+
+            {/* ── Confirm Modal (delete / block / link-delete / link-edit) ── */}
+            {(modal.action === "delete" ||
+              modal.action === "block" ||
+              (modal.type === "link" &&
+                (modal.action === "delete" || modal.action === "edit"))) && (
               <div className="modal-content confirm">
-                <div className="warning-icon">
+                <div
+                  className={`warning-icon ${modal.action === "delete" ? "danger" : "warn"}`}
+                >
                   <AiOutlineExclamationCircle />
                 </div>
                 <h4>Təsdiq Tələb Olunur</h4>
-                <p>Bu əməliyyatı tamamlamaq istədiyinizə əminsiniz?</p>
+                <p>
+                  {modal.type === "link" && modal.action === "delete"
+                    ? `"${modal.data?.platform}" linki silinəcək. Davam etmək istəyirsiniz?`
+                    : modal.type === "link" && modal.action === "edit"
+                      ? `"${modal.data?.platform}" linkini redaktə etmək istəyirsiniz?`
+                      : modal.action === "delete"
+                        ? `"${modal.data?.name || modal.data?.fullName}" silinəcək. Davam etmək istəyirsiniz?`
+                        : modal.data?.isBlocked
+                          ? `"${modal.data?.fullName}" blokdan çıxarılacaq. Davam etmək istəyirsiniz?`
+                          : `"${modal.data?.fullName}" bloklanacaq. Davam etmək istəyirsiniz?`}
+                </p>
                 <div className="confirm-btns">
-                  <button
-                    className="cancel-btn"
-                    onClick={() => setModal({ isOpen: false })}
-                  >
+                  <button className="cancel-btn" onClick={closeModal}>
                     İmtina
                   </button>
                   <button className="confirm-btn" onClick={handleFinalConfirm}>
