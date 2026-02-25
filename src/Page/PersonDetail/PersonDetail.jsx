@@ -11,6 +11,7 @@ import {
   Mail,
   MapPin,
   Phone,
+  Facebook,
 } from "lucide-react";
 import logoBg from "../../image/Logo1.png";
 
@@ -39,51 +40,52 @@ function PersonDetail() {
   }, []);
 
   const person = {
-    name: "Emil Zeynalov",
-    role: "Senior Full-stack Developer",
-    image: "https://picsum.photos/seed/person/300/300",
+    name: "Ali İsmayıl",
+    role: "IT Layihə Meneceri",
+    image:
+      "https://res.cloudinary.com/ds42i5esb/image/upload/v1753182180/Ali-Portfolio/Image1_xk2but.jpg",
     links: [
       {
         id: 1,
         title: "Instagram",
-        url: "https://instagram.com",
+        url: "https://www.instagram.com/ali.ismayil_/",
         icon: <Instagram size={18} />,
       },
       {
         id: 2,
         title: "LinkedIn",
-        url: "https://linkedin.com",
+        url: "https://www.linkedin.com/in/ali-ismayilzade/",
         icon: <Linkedin size={18} />,
       },
       {
         id: 3,
-        title: "Twitter",
-        url: "https://twitter.com",
-        icon: <Twitter size={18} />,
+        title: "Facebook",
+        url: "https://www.facebook.com/profile.php?id=61572683141152",
+        icon: <Facebook size={18} />,
       },
       {
         id: 4,
         title: "Website",
-        url: "https://google.com",
+        url: "https://alismayil.dev/",
         icon: <Globe size={18} />,
       },
       {
         id: 5,
         title: "GitHub",
-        url: "https://github.com",
+        url: "https://github.com/AliIsmayl",
         icon: <Github size={18} />,
       },
       {
         id: 6,
         title: "Email",
-        url: "mailto:example@mail.com",
+        url: "mailto:ali.ismayil.681@gmail.com",
         icon: <Mail size={18} />,
       },
       { id: 7, title: "Location", url: "#", icon: <MapPin size={18} /> },
       {
         id: 8,
         title: "Phone",
-        url: "tel:+9940000000",
+        url: "tel:+9940998982004",
         icon: <Phone size={18} />,
       },
     ],
