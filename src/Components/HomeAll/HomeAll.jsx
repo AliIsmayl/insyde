@@ -10,14 +10,13 @@ const TRANSLATIONS = {
     nav: { logo: "INSIGHT" },
     hero: {
       title: "Premium Digital Card",
-      subtitle: "Share your social media, portfolio, and contact information with just a single tap.",
-    },
+      subtitle: "Share your social media, portfolio, and contact information with just a single tap."},
     how: {
       title: "How It Works",
       steps: [
         { id: "01", title: "Discover", description: "We analyze your business needs and identify opportunities." },
         { id: "02", title: "Design", description: "Our team crafts elegant solutions tailored to your requirements." },
-        { id: "03", title: "Deploy", description: "Seamless implementation with continuous support." },
+        { id: "03", title: "Deploy", description: "Seamless implementation with continuous support."},
         { id: "04", title: "Deliver", description: "Experience measurable results and sustainable growth." },
       ],
     },
@@ -43,8 +42,7 @@ const TRANSLATIONS = {
     nav: { logo: "İNSAYT" },
     hero: {
       title: "Premium Rəqəmsal Kart",
-      subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün.",
-    },
+      subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün."},
     how: {
       title: "Necə İşləyir",
       steps: [
