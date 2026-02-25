@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from "react";
 import {
   AiOutlinePlus,
-  AiOutlineDelete,
+  AiOutlineClose,
   AiOutlineCloudUpload,
   AiOutlineCheck,
   AiOutlineDown,
+  AiOutlineExclamationCircle,
 } from "react-icons/ai";
+import {
+  Instagram,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Youtube,
+  Github,
+  Globe,
+  Mail,
+  Phone,
+} from "lucide-react";
 import "./AdminPanel.scss";
 import { Link } from "react-router-dom";
 
-// Platformalar və onlara uyğun şəkil URL-lərinin xəritəsi
 const PLATFORM_MAP = {
-  Instagram: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
-  Facebook: "https://cdn-icons-png.flaticon.com/512/733/733547.png",
-  LinkedIn: "https://cdn-icons-png.flaticon.com/512/3536/3536505.png",
-  Twitter: "https://cdn-icons-png.flaticon.com/512/3256/3256013.png",
-  TikTok: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png",
-  Youtube: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+  Instagram,
+  Facebook,
+  LinkedIn: Linkedin,
+  Twitter,
+  Youtube,
+  GitHub: Github,
+  Website: Globe,
+  Email: Mail,
+  Phone,
 };
 
 const PLATFORMS = Object.keys(PLATFORM_MAP);
@@ -24,27 +38,25 @@ const PLATFORMS = Object.keys(PLATFORM_MAP);
 function AdminPanel() {
   const [profileImage, setProfileImage] = useState(null);
   const [fullName, setFullName] = useState("");
-  const [activeDropdown, setActiveDropdown] = useState({
-    id: null,
-    type: null,
-  });
+  const [aboutMe, setAboutMe] = useState("");
+  const [activeDropdownId, setActiveDropdownId] = useState(null);
 
-  // Mövzu məntiqi - LocalStorage-dan oxuyur
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("app-theme");
-    const isDark = savedTheme !== null ? JSON.parse(savedTheme) : true;
-    document.body.className = isDark ? "dark-theme" : "light-theme";
-  }, []);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const [socialLinks, setSocialLinks] = useState([
     {
       id: Date.now(),
       platform: "Instagram",
-      icon: PLATFORM_MAP["Instagram"],
       link: "",
-      isActive: true,
     },
   ]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("app-theme");
+    const isDark = savedTheme !== null ? JSON.parse(savedTheme) : true;
+    document.body.className = isDark ? "dark-theme" : "light-theme";
+  }, []);
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -58,34 +70,37 @@ function AdminPanel() {
       {
         id: Date.now(),
         platform: "Instagram",
-        icon: PLATFORM_MAP["Instagram"],
         link: "",
-        isActive: true,
       },
     ]);
   };
 
-  const removeField = (id) => {
+  const initiateDelete = (id) => {
+    setItemToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
     if (socialLinks.length > 1) {
-      setSocialLinks(socialLinks.filter((item) => item.id !== id));
+      setSocialLinks(socialLinks.filter((item) => item.id !== itemToDelete));
     }
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
 
   const updateField = (id, key, value) => {
     setSocialLinks(
-      socialLinks.map((item) => {
-        if (item.id === id) {
-          let updatedItem = { ...item, [key]: value };
-          // Platforma seçiləndə şəkli avtomatik dəyiş
-          if (key === "platform") {
-            updatedItem.icon = PLATFORM_MAP[value];
-          }
-          return updatedItem;
-        }
-        return item;
-      }),
+      socialLinks.map((item) =>
+        item.id === id ? { ...item, [key]: value } : item,
+      ),
     );
-    setActiveDropdown({ id: null, type: null });
+    setActiveDropdownId(null);
+  };
+
+  // Platformaya uyğun ikonu render edən funksiya
+  const renderIcon = (platformName, size = 18) => {
+    const IconComponent = PLATFORM_MAP[platformName];
+    return IconComponent ? <IconComponent size={size} /> : null;
   };
 
   return (
@@ -93,72 +108,84 @@ function AdminPanel() {
       <div className="admin-card">
         <h2 className="admin-title">Admin Panel - Profil Redaktəsi</h2>
 
-        {/* Üst hissə: Şəkil və Ad */}
+        {/* Profil və Məlumat Bölməsi */}
         <div className="profile-section">
-          <div className="upload-container">
-            <label className="upload-label">
-              <AiOutlineCloudUpload />
-              <span>Yüklə</span>
+          <div className="top-info">
+            <div className="upload-container">
+              <label className="upload-label">
+                <AiOutlineCloudUpload />
+                <span>Yüklə</span>
+                <input
+                  type="file"
+                  onChange={handleImageChange}
+                  hidden
+                  accept="image/*"
+                />
+              </label>
+              {profileImage && (
+                <div className="preview-box">
+                  <img src={profileImage} alt="user" />
+                </div>
+              )}
+            </div>
+            <div className="name-input">
+              <label>Ad Soyad</label>
               <input
-                type="file"
-                onChange={handleImageChange}
-                hidden
-                accept="image/*"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Tam adınızı daxil edin"
               />
-            </label>
-            {profileImage && (
-              <div className="preview-box">
-                <img src={profileImage} alt="user" />
-              </div>
-            )}
+            </div>
           </div>
-          <div className="name-input">
-            <label>Ad Soyad</label>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Tam adınızı daxil edin"
-            />
+
+          <div className="about-input">
+            <label>Haqqında məlumat</label>
+            <textarea
+              rows="3"
+              value={aboutMe}
+              onChange={(e) => setAboutMe(e.target.value)}
+              placeholder="Özünüz barədə qısa məlumat yazın..."
+            ></textarea>
           </div>
         </div>
 
-        {/* Dinamik Sosial Sahələr */}
+        {/* Sosial Linklər Siyahısı */}
         <div className="dynamic-list">
           {socialLinks.map((row) => (
             <div key={row.id} className="field-row">
-              {/* Switch Məntiqi */}
-              <label className="custom-switch">
-                <input
-                  type="checkbox"
-                  checked={row.isActive}
-                  onChange={(e) =>
-                    updateField(row.id, "isActive", e.target.checked)
-                  }
-                />
-                <span className="slider"></span>
-              </label>
+              <div className="row-controls">
+                {socialLinks.length > 1 && (
+                  <button
+                    className="close-btn"
+                    onClick={() => initiateDelete(row.id)}
+                  >
+                    <AiOutlineClose />
+                  </button>
+                )}
+              </div>
 
-              {/* Platforma Select - Yalnız Switch AÇIQ olduqda Aktivdir */}
-              <div
-                className={`custom-select-wrap ${!row.isActive ? "disabled-select" : ""}`}
-              >
-                <div
-                  className="select-selected"
-                  onClick={() =>
-                    row.isActive &&
-                    setActiveDropdown(
-                      activeDropdown.id === row.id &&
-                        activeDropdown.type === "plat"
-                        ? { id: null, type: null }
-                        : { id: row.id, type: "plat" },
-                    )
-                  }
-                >
-                  {row.platform} <AiOutlineDown className="arrow-icon" />
-                </div>
-                {activeDropdown.id === row.id &&
-                  activeDropdown.type === "plat" && (
+              {/* Birləşdirilmiş Platforma və İkon Bölməsi */}
+              <div className="select-group">
+                <div className="platform-select-wrapper">
+                  <div
+                    className="select-selected"
+                    onClick={() =>
+                      setActiveDropdownId(
+                        activeDropdownId === row.id ? null : row.id,
+                      )
+                    }
+                  >
+                    <div className="selected-content">
+                      <span className="icon-preview">
+                        {renderIcon(row.platform)}
+                      </span>
+                      <span className="text-preview">{row.platform}</span>
+                    </div>
+                    <AiOutlineDown className="arrow-icon" />
+                  </div>
+
+                  {activeDropdownId === row.id && (
                     <div className="select-options">
                       {PLATFORMS.map((p) => (
                         <div
@@ -166,7 +193,10 @@ function AdminPanel() {
                           className="option-item"
                           onClick={() => updateField(row.id, "platform", p)}
                         >
-                          {p}{" "}
+                          <div className="option-content">
+                            {renderIcon(p, 16)}
+                            <span>{p}</span>
+                          </div>
                           {row.platform === p && (
                             <AiOutlineCheck className="check-icon" />
                           )}
@@ -174,54 +204,9 @@ function AdminPanel() {
                       ))}
                     </div>
                   )}
-              </div>
-
-              {/* İkon Select (Image) - Yalnız Switch BAĞLI olduqda Aktivdir */}
-              <div
-                className={`custom-select-wrap icon-select ${row.isActive ? "disabled-select" : ""}`}
-              >
-                <div
-                  className="select-selected"
-                  onClick={() =>
-                    !row.isActive &&
-                    setActiveDropdown(
-                      activeDropdown.id === row.id &&
-                        activeDropdown.type === "icon"
-                        ? { id: null, type: null }
-                        : { id: row.id, type: "icon" },
-                    )
-                  }
-                >
-                  <img
-                    src={row.icon}
-                    alt="selected-icon"
-                    className="selected-img"
-                  />
-                  <AiOutlineDown className="arrow-icon" />
                 </div>
-                {activeDropdown.id === row.id &&
-                  activeDropdown.type === "icon" && (
-                    <div className="select-options">
-                      {PLATFORMS.map((p) => (
-                        <div
-                          key={p}
-                          className="option-item img-option"
-                          onClick={() =>
-                            updateField(row.id, "icon", PLATFORM_MAP[p])
-                          }
-                        >
-                          <img
-                            src={PLATFORM_MAP[p]}
-                            alt={p}
-                            className="dropdown-img"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
               </div>
 
-              {/* Link Input */}
               <div className="link-input-wrap">
                 <input
                   type="text"
@@ -230,18 +215,10 @@ function AdminPanel() {
                   onChange={(e) => updateField(row.id, "link", e.target.value)}
                 />
               </div>
-
-              {/* Silmə Düyməsi */}
-              {socialLinks.length > 1 && (
-                <button className="del-btn" onClick={() => removeField(row.id)}>
-                  <AiOutlineDelete />
-                </button>
-              )}
             </div>
           ))}
         </div>
 
-        {/* Alt Düymələr */}
         <div className="footer-btns">
           <button className="plus-btn" onClick={addField}>
             <AiOutlinePlus />
@@ -254,7 +231,6 @@ function AdminPanel() {
           </button>
         </div>
 
-        {/* İmza */}
         <div className="created-by">
           Created by{" "}
           <Link to={"/"} className="link">
@@ -262,6 +238,37 @@ function AdminPanel() {
           </Link>
         </div>
       </div>
+
+  {showDeleteModal && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="modal-header">
+        <div className="icon-badge">
+          <AiOutlineExclamationCircle />
+        </div>
+      </div>
+      <div className="modal-body">
+        <h3>Silmək istəyirsiniz?</h3>
+        <p>Bu əməliyyatı geri qaytarmaq mümkün olmayacaq. Sosial link siyahıdan həmişəlik silinəcək.</p>
+      </div>
+      <div className="modal-actions">
+        <button 
+          className="btn-secondary" 
+          onClick={() => setShowDeleteModal(false)}
+        >
+          Ləğv et
+        </button>
+        <button 
+          className="btn-danger" 
+          onClick={confirmDelete}
+        >
+          Bəli, Sil
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
