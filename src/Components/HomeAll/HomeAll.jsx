@@ -42,7 +42,7 @@ const TRANSLATIONS = {
     nav: { logo: "İNSAYT" },
     hero: {
       title: "Premium Rəqəmsal Kart",
-      subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün."},
+      subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün."},
     how: {
       title: "Necə İşləyir",
       steps: [
