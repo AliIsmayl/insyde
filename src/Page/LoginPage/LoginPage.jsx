@@ -62,7 +62,7 @@ function LoginPage() {
             </div>
           </div>
 
-          <button type="submit" className="login-btn">Giriş Et</button>
+          <button type="submit" className="login-btn">Daxil ol</button>
         </form>
 
         <div className="created-by">
