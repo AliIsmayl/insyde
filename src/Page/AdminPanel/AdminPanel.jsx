@@ -39,6 +39,7 @@ function AdminPanel() {
   const [profileImage, setProfileImage] = useState(null);
   const [fullName, setFullName] = useState("");
   const [aboutMe, setAboutMe] = useState("");
+  const [userCode] = useState("USR-88429"); // Dəyişdirilə bilməyən unikal kod
   const [activeDropdownId, setActiveDropdownId] = useState(null);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -97,7 +98,6 @@ function AdminPanel() {
     setActiveDropdownId(null);
   };
 
-  // Platformaya uyğun ikonu render edən funksiya
   const renderIcon = (platformName, size = 18) => {
     const IconComponent = PLATFORM_MAP[platformName];
     return IconComponent ? <IconComponent size={size} /> : null;
@@ -108,7 +108,7 @@ function AdminPanel() {
       <div className="admin-card">
         <h2 className="admin-title">Admin Panel - Profil Redaktəsi</h2>
 
-        {/* Profil və Məlumat Bölməsi */}
+        {/* Profil və Ümumi Məlumat Bölməsi */}
         <div className="profile-section">
           <div className="top-info">
             <div className="upload-container">
@@ -128,14 +128,21 @@ function AdminPanel() {
                 </div>
               )}
             </div>
-            <div className="name-input">
-              <label>Ad Soyad</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Tam adınızı daxil edin"
-              />
+
+            <div className="inputs-row">
+              <div className="name-input">
+                <label>Ad Soyad</label>
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Tam adınızı daxil edin"
+                />
+              </div>
+              <div className="usercode-display">
+                <label>User Code</label>
+                <div className="code-box">{userCode}</div>
+              </div>
             </div>
           </div>
 
@@ -165,7 +172,6 @@ function AdminPanel() {
                 )}
               </div>
 
-              {/* Birləşdirilmiş Platforma və İkon Bölməsi */}
               <div className="select-group">
                 <div className="platform-select-wrapper">
                   <div
@@ -225,7 +231,7 @@ function AdminPanel() {
           </button>
           <button
             className="save-btn"
-            onClick={() => alert("Yadda saxlanıldı!")}
+            onClick={() => alert("Məlumatlar yadda saxlanıldı!")}
           >
             Yadda Saxla
           </button>
@@ -239,36 +245,40 @@ function AdminPanel() {
         </div>
       </div>
 
-  {showDeleteModal && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <div className="modal-header">
-        <div className="icon-badge">
-          <AiOutlineExclamationCircle />
-        </div>
-      </div>
-      <div className="modal-body">
-        <h3>Silmək istəyirsiniz?</h3>
-        <p>Bu əməliyyatı geri qaytarmaq mümkün olmayacaq. Sosial link siyahıdan həmişəlik silinəcək.</p>
-      </div>
-      <div className="modal-actions">
-        <button 
-          className="btn-secondary" 
+      {/* Təkmilləşdirilmiş Silmə Modalı */}
+      {showDeleteModal && (
+        <div
+          className="modal-overlay"
           onClick={() => setShowDeleteModal(false)}
         >
-          Ləğv et
-        </button>
-        <button 
-          className="btn-danger" 
-          onClick={confirmDelete}
-        >
-          Bəli, Sil
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-drag-handle" />
+            <div className="modal-header">
+              <div className="icon-badge">
+                <AiOutlineExclamationCircle />
+              </div>
+            </div>
+            <div className="modal-body">
+              <h3>Silmək istəyirsiniz?</h3>
+              <p>
+                Bu əməliyyat geri qaytarıla bilməz. Sosial link siyahıdan
+                həmişəlik silinəcək.
+              </p>
+            </div>
+            <div className="modal-actions">
+              <button
+                className="btn-secondary"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Ləğv et
+              </button>
+              <button className="btn-danger" onClick={confirmDelete}>
+                Bəli, Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
