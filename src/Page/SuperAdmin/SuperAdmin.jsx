@@ -23,6 +23,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./SuperAdmin.scss";
 import { Link } from "react-router-dom";
 
+// ─── Slug Generator ───────────────────────────────────
+const generateSlug = () => {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*-_";
+  let slug = "";
+  while (slug.length < 15) {
+    slug += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return slug;
+};
+
+// ─── UserCode Generator (maks. 9 istifadəçi) ─────────
+const generateUserCode = (existingUsers = []) => {
+  const existing = new Set(existingUsers.map((u) => u.userCode));
+  if (existing.size >= 9) return null;
+  let code;
+  do {
+    const digits = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
+    code = `SYD${digits}`;
+  } while (existing.has(code));
+  return code;
+};
+
 function SuperAdmin() {
   const [socials, setSocials] = useState([
     { id: 1, name: "Instagram", iconCode: "AiFillInstagram" },
@@ -33,8 +55,9 @@ function SuperAdmin() {
     {
       id: 1,
       fullName: "Əli Məmmədov",
-      userCode: "USR-9921",
+      userCode: generateUserCode([]),
       username: "ali01",
+      slug: generateSlug(),
       isBlocked: false,
       socialLinks: [
         {
@@ -64,8 +87,8 @@ function SuperAdmin() {
 
   const [newUserForm, setNewUserForm] = useState({
     fullName: "",
-    userCode: "",
     password: "",
+    slug: generateSlug(),
   });
 
   const [modal, setModal] = useState({
@@ -167,7 +190,7 @@ function SuperAdmin() {
     closeModal();
   };
 
-  // ─── Link helpers ─────────────────────────────────────
+  // ─── Link Helpers ─────────────────────────────────────
   const toggleLinkEditDirect = (userId, platform) => {
     setUsers(
       users.map((u) =>
@@ -255,21 +278,28 @@ function SuperAdmin() {
   const handleAddUser = (e) => {
     e.preventDefault();
     if (!newUserForm.fullName.trim()) return;
+    if (users.length >= 9) return;
+
+    const code = generateUserCode(users);
+    if (!code) return;
+
     const newUser = {
       id: Date.now(),
       fullName: newUserForm.fullName,
-      userCode:
-        newUserForm.userCode ||
-        `USR-${Math.floor(1000 + Math.random() * 9000)}`,
+      userCode: code,
       username: newUserForm.fullName.toLowerCase().replace(/\s+/g, ""),
       password: newUserForm.password || "",
+      slug: newUserForm.slug,
       isBlocked: false,
       socialLinks: [],
     };
+
     setUsers([...users, newUser]);
-    setNewUserForm({ fullName: "", userCode: "", password: "" });
+    setNewUserForm({ fullName: "", password: "", slug: generateSlug() });
     setShowNewUserForm(false);
   };
+
+  const isMaxUsers = users.length >= 9;
 
   return (
     <div className="super-admin">
@@ -386,12 +416,13 @@ function SuperAdmin() {
             <div className="section-header">
               <h3>
                 <AiOutlineUser /> İstifadəçi Bazası{" "}
-                <span>({users.length})</span>
+                <span>({users.length}/9)</span>
               </h3>
-              {/* Yeni istifadəçi toggle */}
               <button
                 className="add-user-toggle"
-                onClick={() => setShowNewUserForm((v) => !v)}
+                onClick={() => !isMaxUsers && setShowNewUserForm((v) => !v)}
+                disabled={isMaxUsers}
+                title={isMaxUsers ? "Maksimum 9 istifadəçiyə çatılıb" : ""}
               >
                 {showNewUserForm ? (
                   <>
@@ -405,9 +436,9 @@ function SuperAdmin() {
               </button>
             </div>
 
-            {/* Yeni İstifadəçi Formu */}
+            {/* ── Yeni İstifadəçi Formu ── */}
             <AnimatePresence>
-              {showNewUserForm && (
+              {showNewUserForm && !isMaxUsers && (
                 <motion.div
                   className="new-user-inline"
                   initial={{ height: 0, opacity: 0 }}
@@ -435,23 +466,6 @@ function SuperAdmin() {
                         />
                       </div>
                       <div className="field">
-                        <label>
-                          User Code{" "}
-                          <span className="optional">(avtomatik)</span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="USR-XXXX"
-                          value={newUserForm.userCode}
-                          onChange={(e) =>
-                            setNewUserForm({
-                              ...newUserForm,
-                              userCode: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <div className="field">
                         <label>Parol</label>
                         <input
                           type="text"
@@ -464,6 +478,30 @@ function SuperAdmin() {
                             })
                           }
                         />
+                      </div>
+                      <div className="field slug-field">
+                        <label>
+                          Slug{" "}
+                          <span className="optional">
+                            (avtomatik • dəyişdirilmir)
+                          </span>
+                        </label>
+                        <div className="slug-display">
+                          <code>{newUserForm.slug}</code>
+                          <button
+                            type="button"
+                            className="regen-slug-btn"
+                            onClick={() =>
+                              setNewUserForm((prev) => ({
+                                ...prev,
+                                slug: generateSlug(),
+                              }))
+                            }
+                            title="Yenidən generasiya et"
+                          >
+                            ↻
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <div className="new-user-actions">
@@ -482,6 +520,13 @@ function SuperAdmin() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Limit xəbərdarlığı */}
+            {isMaxUsers && (
+              <div className="max-users-warning">
+                Maksimum istifadəçi sayına (9) çatılıb.
+              </div>
+            )}
 
             <div className="sa-list scrollable">
               {users.map((u) => (
@@ -601,7 +646,6 @@ function SuperAdmin() {
                                     {sl.link}
                                   </a>
                                   <div className="link-actions">
-                                    {/* Edit → modal */}
                                     <button
                                       onClick={() =>
                                         setModal({
@@ -621,7 +665,6 @@ function SuperAdmin() {
                                       <AiOutlineEdit />
                                       <span>Redaktə</span>
                                     </button>
-                                    {/* Delete → modal */}
                                     <button
                                       onClick={() =>
                                         setModal({
@@ -737,56 +780,89 @@ function SuperAdmin() {
               <AiOutlineClose />
             </button>
 
-            {/* ── User Edit — Step 1 (Form) ── */}
-            {modal.type === "user" &&
-              modal.action === "edit" &&
-              modal.step === 1 && (
-                <div className="modal-content">
-                  <h4>İstifadəçini Redaktə Et</h4>
-                  <div className="modal-form">
-                    <div className="field">
-                      <label>Ad Soyad</label>
-                      <input
-                        type="text"
-                        defaultValue={modal.data.fullName}
-                        id="edit-name"
-                      />
-                    </div>
-                    <div className="field">
-                      <label>User Code</label>
-                      <input
-                        type="text"
-                        defaultValue={modal.data.userCode}
-                        id="edit-code"
-                      />
-                    </div>
-                    <div className="confirm-btns">
-                      <button className="cancel-btn" onClick={closeModal}>
-                        İmtina
-                      </button>
-                      <button
-                        className="confirm-btn next-btn"
-                        onClick={() =>
-                          setModal({
-                            ...modal,
-                            step: 2,
-                            tempData: {
-                              fullName:
-                                document.getElementById("edit-name").value,
-                              userCode:
-                                document.getElementById("edit-code").value,
-                            },
-                          })
-                        }
-                      >
-                        Davam Et
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+           {/* ── User Edit — Step 1 ── */}
+{modal.type === "user" &&
+  modal.action === "edit" &&
+  modal.step === 1 && (
+    <div className="modal-content">
+      <h4>İstifadəçini Redaktə Et</h4>
+      <div className="modal-form">
+        <div className="field">
+          <label>Ad Soyad</label>
+          <input
+            type="text"
+            defaultValue={modal.data.fullName}
+            id="edit-name"
+          />
+        </div>
+        <div className="field">
+          <label>User Code</label>
+          <input
+            type="text"
+            defaultValue={modal.data.userCode}
+            id="edit-code"
+            maxLength={9}
+            onChange={(e) => {
+              const val = e.target.value;
+              const isValid = /^SYD\d{0,6}$/.test(val);
+              e.target.style.borderColor = isValid ? "" : "#e74c3c";
+              const errEl = document.getElementById("edit-code-error");
+              if (errEl) errEl.style.display = isValid ? "none" : "flex";
+            }}
+          />
+          <span
+            id="edit-code-error"
+            style={{
+              display: "none",
+              alignItems: "center",
+              gap: "5px",
+              color: "#e74c3c",
+              fontSize: "11px",
+              marginTop: "4px",
+            }}
+          >
+            ⚠ Format: SYD + 6 rəqəm (məs: SYD047291)
+          </span>
+        </div>
+        <div className="confirm-btns">
+          <button className="cancel-btn" onClick={closeModal}>
+            İmtina
+          </button>
+          <button
+            className="confirm-btn next-btn"
+            onClick={() => {
+              const nameVal = document.getElementById("edit-name").value;
+              const codeVal = document.getElementById("edit-code").value;
+              const isValid = /^SYD\d{6}$/.test(codeVal);
 
-            {/* ── User Edit — Step 2 (Confirm) ── */}
+              if (!isValid) {
+                const input = document.getElementById("edit-code");
+                const errEl = document.getElementById("edit-code-error");
+                input.style.borderColor = "#e74c3c";
+                if (errEl) errEl.style.display = "flex";
+                input.focus();
+                return;
+              }
+
+              setModal({
+                ...modal,
+                step: 2,
+                tempData: {
+                  fullName: nameVal,
+                  userCode: codeVal,
+                },
+              });
+            }}
+          >
+            Davam Et
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+
+            {/* ── User Edit — Step 2 ── */}
             {modal.type === "user" &&
               modal.action === "edit" &&
               modal.step === 2 && (
@@ -867,14 +943,16 @@ function SuperAdmin() {
               </div>
             )}
 
-            {/* ── Confirm Modal (delete / block / link-delete / link-edit) ── */}
+            {/* ── Confirm Modal (delete / block / link) ── */}
             {(modal.action === "delete" ||
               modal.action === "block" ||
               (modal.type === "link" &&
                 (modal.action === "delete" || modal.action === "edit"))) && (
               <div className="modal-content confirm">
                 <div
-                  className={`warning-icon ${modal.action === "delete" ? "danger" : "warn"}`}
+                  className={`warning-icon ${
+                    modal.action === "delete" ? "danger" : "warn"
+                  }`}
                 >
                   <AiOutlineExclamationCircle />
                 </div>
@@ -885,7 +963,9 @@ function SuperAdmin() {
                     : modal.type === "link" && modal.action === "edit"
                       ? `"${modal.data?.platform}" linkini redaktə etmək istəyirsiniz?`
                       : modal.action === "delete"
-                        ? `"${modal.data?.name || modal.data?.fullName}" silinəcək. Davam etmək istəyirsiniz?`
+                        ? `"${
+                            modal.data?.name || modal.data?.fullName
+                          }" silinəcək. Davam etmək istəyirsiniz?`
                         : modal.data?.isBlocked
                           ? `"${modal.data?.fullName}" blokdan çıxarılacaq. Davam etmək istəyirsiniz?`
                           : `"${modal.data?.fullName}" bloklanacaq. Davam etmək istəyirsiniz?`}

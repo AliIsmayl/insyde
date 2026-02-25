@@ -14,6 +14,7 @@ import {
   Facebook,
 } from "lucide-react";
 import logoBg from "../../image/Logo1.png";
+import shekil from "../../image/yoxlama.jfif";
 
 function PersonDetail() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -42,8 +43,7 @@ function PersonDetail() {
   const person = {
     name: "Ali İsmayıl",
     role: "IT Layihə Meneceri",
-    image:
-      "https://res.cloudinary.com/ds42i5esb/image/upload/v1753182180/Ali-Portfolio/Image1_xk2but.jpg",
+    image: shekil,
     links: [
       {
         id: 1,

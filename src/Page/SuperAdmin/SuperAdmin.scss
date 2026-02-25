@@ -85,7 +85,7 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
-    max-height: 500px;
+    max-height: 600px;
 
     @media (max-width: 992px) {
       max-height: none;
@@ -139,7 +139,6 @@
         }
       }
 
-      // ── Yeni İstifadəçi Toggle Butonu ──────────────────
       .add-user-toggle {
         display: inline-flex;
         align-items: center;
@@ -169,7 +168,7 @@
     }
   }
 
-  // ─── Yeni İstifadəçi Inline Form ──────────────────────
+  // ─── Yeni İstifadəçi Inline ───────────────────────────
   .new-user-inline {
     overflow: hidden;
     margin-bottom: 18px;
@@ -189,16 +188,18 @@
 
       .new-user-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 12px;
         margin-bottom: 16px;
 
-        @media (max-width: 768px) {
-          grid-template-columns: 1fr 1fr;
-        }
         @media (max-width: 480px) {
           grid-template-columns: 1fr;
           gap: 10px;
+        }
+
+        // Slug field tam genişliyə uzanır
+        .slug-field {
+          grid-column: 1 / -1;
         }
       }
 
@@ -249,6 +250,56 @@
           @media (max-width: 360px) {
             padding: 8px 10px;
             font-size: 12px;
+          }
+        }
+
+        // ── Slug Display ─────────────────────────────────
+        .slug-display {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: var(--input-bg, #0b0b0b);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 4px;
+          padding: 10px 12px;
+
+          code {
+            flex: 1;
+            font-family: "Courier New", monospace;
+            font-size: 13px;
+            color: var(--text-gold, #c8a75e);
+            letter-spacing: 1.5px;
+            word-break: break-all;
+            user-select: all;
+
+            @media (max-width: 480px) {
+              font-size: 11px;
+              letter-spacing: 1px;
+            }
+          }
+
+          .regen-slug-btn {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid rgba(200, 167, 94, 0.3);
+            background: rgba(200, 167, 94, 0.08);
+            color: var(--text-gold, #c8a75e);
+            font-size: 17px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition:
+              background 0.2s,
+              transform 0.35s ease;
+            line-height: 1;
+
+            &:hover {
+              background: rgba(200, 167, 94, 0.2);
+              transform: rotate(180deg);
+            }
           }
         }
       }
@@ -308,7 +359,7 @@
     }
   }
 
-  // ─── Form ─────────────────────────────────────────────
+  // ─── Platform Form ────────────────────────────────────
   .sa-form {
     background: rgba(255, 255, 255, 0.02);
     padding: 20px;
@@ -641,7 +692,6 @@
         &.block {
           background: rgba(255, 255, 255, 0.1);
           color: #fff;
-
           &.is-unblock {
             background: rgba(231, 76, 60, 0.15);
             color: #e74c3c;
@@ -677,7 +727,6 @@
           margin-bottom: 12px;
           opacity: 0.6;
           font-weight: 400;
-
           @media (max-width: 360px) {
             font-size: 11px;
             margin-bottom: 8px;
@@ -720,7 +769,6 @@
             align-items: center;
             gap: 8px;
             min-width: 0;
-
             @media (max-width: 600px) {
               width: 100%;
             }
@@ -842,7 +890,7 @@
           }
         }
 
-        // ── Yeni Link Formu ────────────────────────────────
+        // ── Yeni Link Formu ──────────────────────────────
         .add-link-form {
           margin-top: 14px;
           padding: 14px;
@@ -861,7 +909,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 400;
-
             @media (max-width: 360px) {
               font-size: 10px;
               margin-bottom: 8px;
@@ -897,7 +944,6 @@
               &:focus {
                 border-color: var(--text-gold, #c8a75e);
               }
-
               option {
                 background: #1c1e21;
                 color: #fff;
@@ -1084,7 +1130,6 @@
             margin-bottom: 30px;
             font-size: 14px;
             line-height: 1.5;
-
             @media (max-width: 360px) {
               font-size: 12px;
               margin-bottom: 20px;
@@ -1096,6 +1141,22 @@
       .icon-preview-area.modal-preview {
         margin-bottom: 15px;
         justify-content: flex-start;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        background: rgba(200, 167, 94, 0.05);
+        border-radius: 4px;
+
+        small {
+          opacity: 0.6;
+          font-size: 11px;
+        }
+        .preview-item {
+          font-size: 24px;
+          display: flex;
+          color: var(--text-gold, #c8a75e);
+        }
       }
 
       .modal-form {
@@ -1180,6 +1241,10 @@
         .confirm-btn {
           background: #e74c3c;
           color: #fff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
 
           &.next-btn {
             background: var(--text-gold, #c8a75e);
@@ -1193,6 +1258,7 @@
   // ─── Scrollable ───────────────────────────────────────
   .scrollable {
     overflow-y: auto;
+    flex: 1;
 
     &::-webkit-scrollbar {
       width: 5px;
