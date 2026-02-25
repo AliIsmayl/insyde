@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./PersonDetail.scss";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import {
   Instagram,
   Linkedin,
@@ -10,10 +12,32 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
-// Loqonu import edirik
 import logoBg from "../../image/Logo1.png";
 
 function PersonDetail() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    // Ekran ölçüsü dəyişdikdə yoxlayırıq
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // AOS-u başladırıq
+    AOS.init({
+      duration: 1000,
+      once: false,
+      // Əgər ekran 768px-dən böyükdürsə animasiyanı söndürürük
+      disable: function () {
+        return window.innerWidth > 768;
+      },
+    });
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const person = {
     name: "Emil Zeynalov",
     role: "Senior Full-stack Developer",
@@ -82,14 +106,18 @@ function PersonDetail() {
         </header>
 
         <div className="links-grid">
-          {person.links.map((link) => (
+          {person.links.map((link, index) => (
             <a
               key={link.id}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
               className="link-item"
-              data-aos="fade-right"
+              // Yalnız mobildə data-aos atributunu əlavə edirik
+              data-aos={
+                isMobile ? (index % 2 === 0 ? "fade-right" : "fade-left") : ""
+              }
+              data-aos-duration="1000"
             >
               <span className="icon-wrapper">{link.icon}</span>
               <span className="link-text">{link.title}</span>

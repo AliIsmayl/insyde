@@ -14,7 +14,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
   justify-content: center;
   padding: 40px 10px 0px;
   font-family: "Montserrat", sans-serif;
-  color: #fff;
+  color: #f5f4f0;
   background: #0b0b0b;
   overflow-x: hidden;
 
@@ -68,11 +68,11 @@ $glass-border: rgba(200, 167, 94, 0.3);
         padding: 2px;
         background: linear-gradient(45deg, transparent, $gold, transparent);
         -webkit-mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
+          linear-gradient(#f5f4f0 0 0) content-box,
+          linear-gradient(#f5f4f0 0 0);
         mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
+          linear-gradient(#f5f4f0 0 0) content-box,
+          linear-gradient(#f5f4f0 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
       }
@@ -82,7 +82,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
       font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: 1px;
-      background: linear-gradient(to right, $gold, #fff, $gold);
+      background: linear-gradient(to right, $gold, #f5f4f0, $gold);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
@@ -127,7 +127,8 @@ $glass-border: rgba(200, 167, 94, 0.3);
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 600;
-        color: rgba(255, 255, 255, 0.8);
+               color: $gold;
+
       }
 
       &:hover {
@@ -137,11 +138,11 @@ $glass-border: rgba(200, 167, 94, 0.3);
 
         .icon-wrapper {
           transform: scale(1.2);
-          color: #fff;
+          color: #f5f4f0;
         }
 
         .link-text {
-          color: #fff;
+          color: #f5f4f0;
         }
       }
     }
