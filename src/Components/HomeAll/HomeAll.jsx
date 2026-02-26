@@ -9,15 +9,13 @@ const TRANSLATIONS = {
   EN: {
     nav: { logo: "INSIGHT" },
     hero: {
-      title: "Premium Technology",
-      subtitle: "For Modern Businesses. We craft elegant solutions that define the future of luxury tech and quiet confidence.",
-    },
-    how: {
-      title: "How It Works",
+      title: "Premium Digital Card",
+      subtitle: "Share your social media, portfolio, and contact information with just a single tap."},
+    how: {title: "How It Works",
       steps: [
         { id: "01", title: "Discover", description: "We analyze your business needs and identify opportunities." },
         { id: "02", title: "Design", description: "Our team crafts elegant solutions tailored to your requirements." },
-        { id: "03", title: "Deploy", description: "Seamless implementation with continuous support." },
+        { id: "03", title: "Deploy", description: "Seamless implementation with continuous support."},
         { id: "04", title: "Deliver", description: "Experience measurable results and sustainable growth." },
       ],
     },
@@ -41,12 +39,9 @@ const TRANSLATIONS = {
   },
   AZ: {
     nav: { logo: "İNSAYT" },
-    hero: {
-      title: "Premium Texnologiya",
-      subtitle: "Müasir Bizneslər Üçün. Biz lüks texnologiyanın və sakit inamın gələcəyini müəyyən edən zərif həllər yaradırıq.",
-    },
-    how: {
-      title: "Necə İşləyir",
+    hero: {title: "Premium Rəqəmsal Kart",
+      subtitle: "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün."},
+    how: {title: "Necə İşləyir",
       steps: [
         { id: "01", title: "Kəşf et", description: "Biz sizin biznes ehtiyaclarınızı təhlil edirik." },
         { id: "02", title: "Dizayn", description: "Komandamız sizə uyğun zərif həllər hazırlayır." },
