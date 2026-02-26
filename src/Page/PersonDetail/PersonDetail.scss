@@ -1,10 +1,79 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600;700&display=swap");
 
+// ─── Variables ────────────────────────────────────────────────
 $gold: #c8a75e;
 $gold-light: #e2c27d;
 $glass: rgba(255, 255, 255, 0.05);
 $glass-border: rgba(200, 167, 94, 0.3);
 
+// ─── Keyframes ────────────────────────────────────────────────
+@keyframes shimmer-sweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    left: 150%;
+    opacity: 0;
+  }
+}
+
+@keyframes gold-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(200, 167, 94, 0.2),
+      0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 12px rgba(200, 167, 94, 0.45),
+      0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes border-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// ── Foto üçün ayrı shimmer (yuxarıdan aşağıya) ────────────────
+@keyframes shimmer-sweep-img {
+  0% {
+    top: -100%;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    top: 150%;
+    opacity: 0;
+  }
+}
+
+// ── Role badge üçün glow pulse ─────────────────────────────────
+@keyframes badge-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(200, 167, 94, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 4px rgba(200, 167, 94, 0.4);
+  }
+}
+
+// ─── Main Wrapper ─────────────────────────────────────────────
 .person-detail-wrapper {
   position: relative;
   min-height: 100vh;
@@ -18,6 +87,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
   background: #0b0b0b;
   overflow-x: hidden;
 
+  // ── Background overlay ──────────────────────────────────
   .bg-blur-overlay {
     position: absolute;
     inset: 0;
@@ -30,6 +100,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
     z-index: 1;
   }
 
+  // ── Main content ────────────────────────────────────────
   .main-content {
     position: relative;
     z-index: 10;
@@ -38,6 +109,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
     text-align: center;
   }
 
+  // ── Profile header ──────────────────────────────────────
   .profile-header {
     display: flex;
     flex-direction: column;
@@ -51,6 +123,9 @@ $glass-border: rgba(200, 167, 94, 0.3);
       height: 130px;
       margin-bottom: 20px;
       padding: 5px;
+      overflow: hidden;
+      border-radius: 16px;
+      animation: gold-pulse 3s ease-in-out infinite;
 
       .profile-img {
         width: 100%;
@@ -58,15 +133,26 @@ $glass-border: rgba(200, 167, 94, 0.3);
         object-fit: cover;
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        z-index: 2;
       }
 
+      // ── Animated gradient border ─────────────────────
       &::before {
         content: "";
         position: absolute;
         inset: 0;
         border-radius: 16px;
         padding: 2px;
-        background: linear-gradient(45deg, transparent, $gold, transparent);
+        background: linear-gradient(
+          135deg,
+          transparent 0%,
+          rgba(200, 167, 94, 0) 20%,
+          rgba(200, 167, 94, 0.7) 50%,
+          rgba(200, 167, 94, 0) 80%,
+          transparent 100%
+        );
+        background-size: 300% 300%;
         -webkit-mask:
           linear-gradient(#f5f4f0 0 0) content-box,
           linear-gradient(#f5f4f0 0 0);
@@ -75,6 +161,31 @@ $glass-border: rgba(200, 167, 94, 0.3);
           linear-gradient(#f5f4f0 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
+        animation: border-rotate 4s linear infinite;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      // ── Shimmer sweep (yuxarıdan aşağıya) ────────────
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -120%;
+        width: 100%;
+        height: 60%;
+        background: linear-gradient(
+          180deg,
+          transparent 0%,
+          rgba(200, 166, 94, 0.079) 40%,
+          rgba(255, 255, 255, 0.067) 50%,
+          rgba(200, 166, 94, 0.1) 60%,
+          transparent 100%
+        );
+        transform: skewY(-30deg);
+        pointer-events: none;
+        z-index: 3;
+        animation: shimmer-sweep-img 4s ease-in-out infinite 1s;
       }
     }
 
@@ -96,29 +207,102 @@ $glass-border: rgba(200, 167, 94, 0.3);
       padding: 4px 16px;
       border-radius: 8px;
       background: $glass;
+
+      // Badge-ə də yumşaq glow pulse
+      animation: badge-pulse 3s ease-in-out infinite;
     }
   }
 
+  // ── Links grid ───────────────────────────────────────────
   .links-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     margin: 0px 10px;
+
     .link-item {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 8px;
       text-decoration: none;
       background: $glass;
       border: 1px solid $glass-border;
       padding: 16px 10px;
       border-radius: 8px;
       backdrop-filter: blur(10px);
+      overflow: hidden;
       transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+
+      // Daimi yumşaq pulse (idle)
+      animation: gold-pulse 3s ease-in-out infinite;
+
+      // ── Shimmer sweep ──────────────────────────────────
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent 0%,
+          rgba(200, 167, 94, 0.18) 40%,
+          rgba(255, 255, 255, 0.12) 50%,
+          rgba(200, 167, 94, 0.18) 60%,
+          transparent 100%
+        );
+        transform: skewX(-15deg);
+        pointer-events: none;
+      }
+
+      // ── Animated gradient border ───────────────────────
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 8px;
+        padding: 1px;
+        background: linear-gradient(
+          135deg,
+          transparent 0%,
+          rgba(200, 167, 94, 0) 30%,
+          rgba(200, 167, 94, 0.5) 50%,
+          rgba(200, 167, 94, 0) 70%,
+          transparent 100%
+        );
+        background-size: 300% 300%;
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: border-rotate 4s linear infinite;
+        pointer-events: none;
+      }
+
+      .only-text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0px auto;
+        position: relative;
+        z-index: 2;
+      }
 
       .icon-wrapper {
         color: $gold;
         display: flex;
+        position: relative;
+        z-index: 2;
+        transition:
+          transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+          color 0.4s ease,
+          filter 0.4s ease;
       }
 
       .link-text {
@@ -126,27 +310,56 @@ $glass-border: rgba(200, 167, 94, 0.3);
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 600;
-               color: $gold;
-
+        color: $gold;
+        height: 20px;
+        width: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+        transition: color 0.4s ease;
       }
 
+      // ── Hover state ────────────────────────────────────
       &:hover {
-        background: rgba(200, 167, 94, 0.15);
-        border-color: $gold;
-        transform: translateY(-5px);
+        background: rgba(200, 167, 94, 0.12);
+        border-color: rgba(200, 167, 94, 0.8);
+        transform: translateY(-1px);
+        animation: none;
+        box-shadow:
+          0 0 10px rgba(200, 167, 94, 0.35),
+          0 0 5px rgba(200, 167, 94, 0.15),
+          0 2px 5px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+        &::after {
+          animation: shimmer-sweep 0.7s ease forwards;
+        }
 
         .icon-wrapper {
           transform: scale(1.2);
           color: #f5f4f0;
+          filter: drop-shadow(0 0 6px rgba(200, 167, 94, 0.8));
         }
 
         .link-text {
           color: #f5f4f0;
+          text-shadow: 0 0 12px rgba(200, 167, 94, 0.6);
         }
+      }
+
+      // ── Active (click) state ───────────────────────────
+      &:active {
+        transform: translateY(-2px) scale(0.98);
+        box-shadow:
+          0 0 10px rgba(200, 167, 94, 0.3),
+          0 4px 15px rgba(0, 0, 0, 0.4);
       }
     }
   }
 
+  // ── Footer ───────────────────────────────────────────────
   .footer-containerr {
     margin-top: 50px;
     width: 100%;
@@ -167,7 +380,7 @@ $glass-border: rgba(200, 167, 94, 0.3);
     }
 
     .footer-logo-wrapper {
-      display: none; // Desktopda tamamilə gizlədirik
+      display: none;
       width: 100%;
       justify-content: center;
 
@@ -176,16 +389,15 @@ $glass-border: rgba(200, 167, 94, 0.3);
         max-width: 320px;
         height: auto;
         object-fit: contain;
-        opacity: 0.4; // Yazıdan diqqəti yayındırmamaq üçün
+        opacity: 0.4;
         filter: brightness(1.1);
       }
     }
   }
 }
 
-// Media Queries
+// ─── Media Queries ────────────────────────────────────────────
 @media (max-width: 768px) {
-  // Planşet və Mobil cihazlarda loqonu göstər
   .person-detail-wrapper .footer-containerr .footer-logo-wrapper {
     display: flex;
   }
@@ -194,11 +406,11 @@ $glass-border: rgba(200, 167, 94, 0.3);
 @media (max-width: 420px) {
   .person-detail-wrapper {
     .links-grid {
-      grid-template-columns: 1fr; // Kiçik mobil ekranlarda tək sütun
+      grid-template-columns: 1fr;
     }
 
     .footer-containerr .footer-logo-wrapper .footer-logo {
-      max-width: 100%; // Çox kiçik ekranlarda loqonu bir az daha daralt
+      max-width: 100%;
     }
   }
 }

@@ -416,7 +416,7 @@ function SuperAdmin() {
             <div className="section-header">
               <h3>
                 <AiOutlineUser /> İstifadəçi Bazası{" "}
-                <span>({users.length}/9)</span>
+                <span>({users.length})</span>
               </h3>
               <button
                 className="add-user-toggle"
@@ -481,10 +481,7 @@ function SuperAdmin() {
                       </div>
                       <div className="field slug-field">
                         <label>
-                          Slug{" "}
-                          <span className="optional">
-                            (avtomatik • dəyişdirilmir)
-                          </span>
+                          Slug <span className="optional">(avtomatik)</span>
                         </label>
                         <div className="slug-display">
                           <code>{newUserForm.slug}</code>
@@ -780,87 +777,91 @@ function SuperAdmin() {
               <AiOutlineClose />
             </button>
 
-           {/* ── User Edit — Step 1 ── */}
-{modal.type === "user" &&
-  modal.action === "edit" &&
-  modal.step === 1 && (
-    <div className="modal-content">
-      <h4>İstifadəçini Redaktə Et</h4>
-      <div className="modal-form">
-        <div className="field">
-          <label>Ad Soyad</label>
-          <input
-            type="text"
-            defaultValue={modal.data.fullName}
-            id="edit-name"
-          />
-        </div>
-        <div className="field">
-          <label>User Code</label>
-          <input
-            type="text"
-            defaultValue={modal.data.userCode}
-            id="edit-code"
-            maxLength={9}
-            onChange={(e) => {
-              const val = e.target.value;
-              const isValid = /^SYD\d{0,6}$/.test(val);
-              e.target.style.borderColor = isValid ? "" : "#e74c3c";
-              const errEl = document.getElementById("edit-code-error");
-              if (errEl) errEl.style.display = isValid ? "none" : "flex";
-            }}
-          />
-          <span
-            id="edit-code-error"
-            style={{
-              display: "none",
-              alignItems: "center",
-              gap: "5px",
-              color: "#e74c3c",
-              fontSize: "11px",
-              marginTop: "4px",
-            }}
-          >
-            ⚠ Format: SYD + 6 rəqəm (məs: SYD047291)
-          </span>
-        </div>
-        <div className="confirm-btns">
-          <button className="cancel-btn" onClick={closeModal}>
-            İmtina
-          </button>
-          <button
-            className="confirm-btn next-btn"
-            onClick={() => {
-              const nameVal = document.getElementById("edit-name").value;
-              const codeVal = document.getElementById("edit-code").value;
-              const isValid = /^SYD\d{6}$/.test(codeVal);
+            {/* ── User Edit — Step 1 ── */}
+            {modal.type === "user" &&
+              modal.action === "edit" &&
+              modal.step === 1 && (
+                <div className="modal-content">
+                  <h4>İstifadəçini Redaktə Et</h4>
+                  <div className="modal-form">
+                    <div className="field">
+                      <label>Ad Soyad</label>
+                      <input
+                        type="text"
+                        defaultValue={modal.data.fullName}
+                        id="edit-name"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>User Code</label>
+                      <input
+                        type="text"
+                        defaultValue={modal.data.userCode}
+                        id="edit-code"
+                        maxLength={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const isValid = /^SYD\d{0,6}$/.test(val);
+                          e.target.style.borderColor = isValid ? "" : "#e74c3c";
+                          const errEl =
+                            document.getElementById("edit-code-error");
+                          if (errEl)
+                            errEl.style.display = isValid ? "none" : "flex";
+                        }}
+                      />
+                      <span
+                        id="edit-code-error"
+                        style={{
+                          display: "none",
+                          alignItems: "center",
+                          gap: "5px",
+                          color: "#e74c3c",
+                          fontSize: "11px",
+                          marginTop: "4px",
+                        }}
+                      >
+                        ⚠ Format: SYD + 6 rəqəm (məs: SYD047291)
+                      </span>
+                    </div>
+                    <div className="confirm-btns">
+                      <button className="cancel-btn" onClick={closeModal}>
+                        İmtina
+                      </button>
+                      <button
+                        className="confirm-btn next-btn"
+                        onClick={() => {
+                          const nameVal =
+                            document.getElementById("edit-name").value;
+                          const codeVal =
+                            document.getElementById("edit-code").value;
+                          const isValid = /^SYD\d{6}$/.test(codeVal);
 
-              if (!isValid) {
-                const input = document.getElementById("edit-code");
-                const errEl = document.getElementById("edit-code-error");
-                input.style.borderColor = "#e74c3c";
-                if (errEl) errEl.style.display = "flex";
-                input.focus();
-                return;
-              }
+                          if (!isValid) {
+                            const input = document.getElementById("edit-code");
+                            const errEl =
+                              document.getElementById("edit-code-error");
+                            input.style.borderColor = "#e74c3c";
+                            if (errEl) errEl.style.display = "flex";
+                            input.focus();
+                            return;
+                          }
 
-              setModal({
-                ...modal,
-                step: 2,
-                tempData: {
-                  fullName: nameVal,
-                  userCode: codeVal,
-                },
-              });
-            }}
-          >
-            Davam Et
-          </button>
-        </div>
-      </div>
-    </div>
-  )}
-
+                          setModal({
+                            ...modal,
+                            step: 2,
+                            tempData: {
+                              fullName: nameVal,
+                              userCode: codeVal,
+                            },
+                          });
+                        }}
+                      >
+                        Davam Et
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             {/* ── User Edit — Step 2 ── */}
             {modal.type === "user" &&
