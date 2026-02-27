@@ -1,17 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./HomeAll.scss";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, ChevronDown, Instagram, Music2 } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  ChevronDown,
+  Instagram,
+  Music2,
+  CheckCircle,
+  AlertCircle,
+  Loader,
+} from "lucide-react";
 import Image from "../../image/Logo.png";
-import { Link } from "react-router";
+import emailjs from "@emailjs/browser";
 
+// ─── EmailJS Config ────────────────────────────────────────────
+const EMAILJS_SERVICE_ID = "service_y3j406s";
+const EMAILJS_TEMPLATE_ID = "template_0b2gpgl";
+const EMAILJS_PUBLIC_KEY = "T9ig9N_yRfUqtx_JG";
+
+// ─── Translations ──────────────────────────────────────────────
 const TRANSLATIONS = {
   EN: {
-    nav: { logo: "INSIGHT" },
     hero: {
       title: "Premium Digital Card",
       subtitle:
-        "Share your social media, portfolio, and contact information with just a single tap.",},
+        "With the Insyde digital card, share your social media accounts, personal portfolio, and contact information with just one tap.",
+    },
     how: {
       title: "How It Works",
       steps: [
@@ -19,23 +34,19 @@ const TRANSLATIONS = {
           id: "01",
           title: "Discover",
           description:
-            "We analyze your business needs and identify opportunities.",
+            "First, we analyze your needs, portfolio, and brand direction.",
         },
         {
           id: "02",
-          title: "Design",
+          title: "Implementation",
           description:
-            "Our team crafts elegant solutions tailored to your requirements.",
+            "All your information is collected and structured into a clean, presentable format.",
         },
         {
           id: "03",
-          title: "Deploy",
-          description: "Seamless implementation with continuous support.",
-        },
-        {
-          id: "04",
-          title: "Deliver",
-          description: "Experience measurable results and sustainable growth.",
+          title: "Delivery",
+          description:
+            "Your finished Insyde card is delivered to you physically in premium packaging.",
         },
       ],
     },
@@ -43,60 +54,66 @@ const TRANSLATIONS = {
       title: "Frequently Asked Questions",
       items: [
         {
-          q: "What services do you offer?",
-          a: "We provide software development and cloud infrastructure.",
+          q: "What is the Insyde card used for?",
+          a: "To present your personal portfolio, brand, and contact information in a digital format in the most effective and aesthetic way.",
         },
         {
-          q: "How long does it take?",
-          a: "Timeline depends on project scope, usually 4-12 weeks.",
+          q: "How can I get information about the card?",
+          a: "You can contact us via Instagram or through the contact form below.",
         },
         {
-          q: "What makes your approach unique?",
-          a: "We combine technical excellence with premium aesthetic.",
+          q: "What if I don't have a portfolio?",
+          a: "After your social information is added, a personal portfolio website is created for you and integrated with your card.",
         },
         {
-          q: "Do you provide support?",
-          a: "Yes, we offer 24/7 premium support for all solutions.",
+          q: "How does the card work?",
+          a: "You can share your information by tapping your Insyde card on any NFC-enabled smartphone.",
         },
       ],
     },
     contact: {
-      title: "Let's Connect",
-      sub: "Get in touch to discuss your project",
+      title: "Contact Us",
+      sub: "Write to us to get your Insyde card.",
       name: "Full Name",
-      email: "Email Address",
+      email: "Email",
       msg: "Message",
       btn: "Send Message",
+      sending: "Sending...",
+      success: "Your message has been sent successfully!",
+      error: "Something went wrong. Please try again.",
+      validation: {
+        name: "Please enter your name.",
+        email: "Please enter a valid email address.",
+        msg: "Please write your message.",
+      },
     },
   },
   AZ: {
-    nav: { logo: "İNSAYT" },
     hero: {
       title: "Premium Rəqəmsal Kart",
       subtitle:
-        "Tək bir toxunuşla sosial media, portfel və əlaqə məlumatlarınızı ötürün.",},
+        "İnsyde rəqəmsal kart ilə sosial media hesablarınızı, şəxsi portfelinizi və əlaqə məlumatlarınızı tək toxunuşla paylaşın.",
+    },
     how: {
       title: "Necə İşləyir",
       steps: [
         {
           id: "01",
           title: "Kəşf et",
-          description: "Biz sizin biznes ehtiyaclarınızı təhlil edirik.",
+          description:
+            "İlk olaraq sizin ehtiyaclarınızı, portfelinizi və brend yönümünüzü təhlil edirik.",
         },
         {
           id: "02",
-          title: "Dizayn",
-          description: "Komandamız sizə uyğun zərif həllər hazırlayır.",
+          title: "Tətbiq",
+          description:
+            "Bütün məlumatlarınız toplanır və təqdimat üçün dolğun, səliqəli formata salınır.",
         },
         {
           id: "03",
-          title: "Tətbiq",
-          description: "Davamlı dəstək ilə problemsiz tətbiq.",
-        },
-        {
-          id: "04",
           title: "Təhvil",
-          description: "Ölçülə bilən nəticələr və davamlı böyümə.",
+          description:
+            "Hazır Insyde kartınız premium qablaşdırmada, fiziki olaraq sizə təqdim olunur.",
         },
       ],
     },
@@ -104,61 +121,127 @@ const TRANSLATIONS = {
       title: "Tez-tez Verilən Suallar",
       items: [
         {
-          q: "Hansı xidmətləri təklif edirsiniz?",
-          a: "Proqram təminatı və bulud infrastrukturu həlləri.",
-        },
-        { q: "Nə qədər vaxt aparır?", a: "Layihədən asılı olaraq 4-12 həftə." },
-        {
-          q: "Sizi unikal edən nədir?",
-          a: "Texniki mükəmməlliyi premium estetika ilə birləşdiririk.",
+          q: "İnsyde kartı nə üçün istifadə olunur?",
+          a: "Şəxsi portfelinizi, brendinizi və əlaqə məlumatlarınızı rəqəmsal formatda ən effektiv və estetik şəkildə təqdim etmək üçün.",
         },
         {
-          q: "Dəstək göstərirsinizmi?",
-          a: "Bəli, 24/7 premium dəstək təklif edirik.",
+          q: "Kart haqqında necə məlumat əldə edə bilərəm?",
+          a: "Instagram üzərindən və ya aşağıdakı əlaqə forması vasitəsilə bizimlə əlaqə saxlaya bilərsiniz.",
+        },
+        {
+          q: "Portfelim yoxdursa, nə edə bilərəm?",
+          a: "Sosial məlumatlarınız əlavə edildikdən sonra sizin üçün şəxsi portfel veb saytı hazırlanır və kartınıza inteqrasiya olunur.",
+        },
+        {
+          q: "Kart necə istifadə olunur?",
+          a: "İnsyde kartınızı NFC dəstəkləyən istənilən telefona yaxınlaşdıraraq məlumatlarınızı paylaşa bilərsiniz.",
         },
       ],
     },
     contact: {
       title: "Bizimlə Əlaqə",
-      sub: "Layihənizi müzakirə etmək üçün yazın",
-      name: "Tam Ad",
+      sub: "Insyde kartı əldə etmək üçün yazın.",
+      name: "Ad, Soyad",
       email: "E-poçt",
       msg: "Mesaj",
       btn: "Mesaj Göndər",
+      sending: "Göndərilir...",
+      success: "Mesajınız uğurla göndərildi!",
+      error: "Xəta baş verdi. Yenidən cəhd edin.",
+      validation: {
+        name: "Adınızı daxil edin.",
+        email: "Düzgün e-poçt ünvanı daxil edin.",
+        msg: "Mesajınızı yazın.",
+      },
     },
   },
 };
 
+// ─── Component ────────────────────────────────────────────────
 function HomeAll() {
-  // 1. Dil seçimini localda saxla və ya AZ olaraq başlat
-  const [lang, setLang] = useState(() => {
-    const savedLang = localStorage.getItem("app-lang");
-    return savedLang || "AZ";
-  });
-
-  // 2. Temanı localda saxla və ya DARK (true) olaraq başlat
+  const [lang, setLang] = useState(
+    () => localStorage.getItem("app-lang") || "AZ",
+  );
   const [isDark, setIsDark] = useState(() => {
-    const savedTheme = localStorage.getItem("app-theme");
-    return savedTheme !== null ? JSON.parse(savedTheme) : true;
+    const saved = localStorage.getItem("app-theme");
+    return saved !== null ? JSON.parse(saved) : true;
   });
-
   const [openFaq, setOpenFaq] = useState(0);
+
+  // ── Form state ──
+  const formRef = useRef();
+  const [formData, setFormData] = useState({
+    from_name: "",
+    reply_to: "",
+    message: "",
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [submitStatus, setSubmitStatus] = useState("idle"); // idle | loading | success | error
+
   const t = TRANSLATIONS[lang];
 
-  // Dil dəyişəndə local-a yaz
   useEffect(() => {
     localStorage.setItem("app-lang", lang);
   }, [lang]);
 
-  // Tema dəyişəndə body class-ını və local-ı yenilə
   useEffect(() => {
     document.body.className = isDark ? "dark-theme" : "light-theme";
     localStorage.setItem("app-theme", JSON.stringify(isDark));
   }, [isDark]);
 
+  // ── Validation ──
+  const validate = () => {
+    const errors = {};
+    if (!formData.from_name.trim())
+      errors.from_name = t.contact.validation.name;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.reply_to))
+      errors.reply_to = t.contact.validation.email;
+    if (!formData.message.trim()) errors.message = t.contact.validation.msg;
+    return errors;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Real-time error clearing
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // ── Send Email ──
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setSubmitStatus("loading");
+
+    try {
+      await emailjs.sendForm(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        EMAILJS_PUBLIC_KEY,
+      );
+      setSubmitStatus("success");
+      setFormData({ from_name: "", reply_to: "", message: "" });
+      setFormErrors({});
+      // 5 saniyə sonra reset
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+    }
+  };
+
   return (
     <div className="home-wrapper">
-      {/* NAVBAR */}
+      {/* ── NAVBAR ── */}
       <nav className="navbar-fixed">
         <div className="container nav-flex">
           <div className="logo">
@@ -194,14 +277,10 @@ function HomeAll() {
       </nav>
 
       <main>
+        {/* ── HERO ── */}
         <section className="hero-section">
           <div className="container flex-row">
             <div className="hero-text">
-              <div className="ornament">
-                <span className="dot"></span>
-                <span className="line"></span>
-                <span className="dot"></span>
-              </div>
               <h1 className="big-title">{t.hero.title}</h1>
               <p className="sub-title">{t.hero.subtitle}</p>
             </div>
@@ -213,15 +292,10 @@ function HomeAll() {
           </div>
         </section>
 
+        {/* ── STEPS ── */}
         <section className="steps-section">
           <div className="container">
             <div className="section-header">
-              <div className="ornament">
-                <span className="dot"></span>
-                <span className="line"></span>
-                <span className="dot"></span>
-                <span className="line long"></span>
-              </div>
               <h2 className="section-title">{t.how.title}</h2>
             </div>
             <div className="steps-grid">
@@ -244,14 +318,10 @@ function HomeAll() {
           </div>
         </section>
 
+        {/* ── FAQ ── */}
         <section className="faq-section">
           <div className="container">
             <div className="section-header">
-              <div className="ornament">
-                <span className="dot"></span>
-                <span className="line"></span>
-                <span className="dot"></span>
-              </div>
               <h2 className="section-title">{t.faq.title}</h2>
             </div>
             <div className="faq-full-grid">
@@ -283,46 +353,123 @@ function HomeAll() {
           </div>
         </section>
 
+        {/* ── CONTACT ── */}
         <section className="contact-section">
           <div className="container">
             <div className="section-header center">
-              <div className="ornament center-orn">
-                <span className="dot"></span>
-                <span className="line"></span>
-                <span className="dot"></span>
-              </div>
               <h2 className="section-title">{t.contact.title}</h2>
               <p className="section-sub">{t.contact.sub}</p>
             </div>
+
+            {/* ── Success / Error Banner ── */}
+            <AnimatePresence>
+              {submitStatus === "success" && (
+                <motion.div
+                  className="form-alert form-alert--success"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <CheckCircle size={18} />
+                  <span>{t.contact.success}</span>
+                </motion.div>
+              )}
+              {submitStatus === "error" && (
+                <motion.div
+                  className="form-alert form-alert--error"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <AlertCircle size={18} />
+                  <span>{t.contact.error}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <form
+              ref={formRef}
               className="contact-form-ui"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmit}
+              noValidate
             >
-              <div className="form-group">
-                <label>{t.contact.name}</label>
-                <input type="text" />
+              {/* Name */}
+              <div
+                className={`form-group ${formErrors.from_name ? "has-error" : ""}`}
+              >
+                <label htmlFor="from_name">{t.contact.name}</label>
+                <input
+                  id="from_name"
+                  name="from_name"
+                  type="text"
+                  value={formData.from_name}
+                  onChange={handleChange}
+                  autoComplete="name"
+                />
+                {formErrors.from_name && (
+                  <span className="field-error">{formErrors.from_name}</span>
+                )}
               </div>
-              <div className="form-group">
-                <label>{t.contact.email}</label>
-                <input type="email" />
+
+              {/* Email */}
+              <div
+                className={`form-group ${formErrors.reply_to ? "has-error" : ""}`}
+              >
+                <label htmlFor="reply_to">{t.contact.email}</label>
+                <input
+                  id="reply_to"
+                  name="reply_to"
+                  type="email"
+                  value={formData.reply_to}
+                  onChange={handleChange}
+                  autoComplete="email"
+                />
+                {formErrors.reply_to && (
+                  <span className="field-error">{formErrors.reply_to}</span>
+                )}
               </div>
-              <div className="form-group">
-                <label>{t.contact.msg}</label>
-                <textarea rows="5"></textarea>
+
+              {/* Message */}
+              <div
+                className={`form-group ${formErrors.message ? "has-error" : ""}`}
+              >
+                <label htmlFor="message">{t.contact.msg}</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                />
+                {formErrors.message && (
+                  <span className="field-error">{formErrors.message}</span>
+                )}
               </div>
-              <button className="submit-btn">{t.contact.btn}</button>
+
+              <button
+                className={`submit-btn ${submitStatus === "loading" ? "loading" : ""}`}
+                type="submit"
+                disabled={submitStatus === "loading"}
+              >
+                {submitStatus === "loading" ? (
+                  <>
+                    <Loader size={16} className="spin-icon" />
+                    {t.contact.sending}
+                  </>
+                ) : (
+                  t.contact.btn
+                )}
+              </button>
             </form>
           </div>
         </section>
       </main>
 
+      {/* ── FOOTER ── */}
       <footer className="footer-premium">
         <div className="container footer-content">
-          <div className="ornament desktop-only">
-            <span className="dot"></span>
-            <span className="line"></span>
-            <span className="dot"></span>
-          </div>
           <div className="footer-main">
             <span className="footer-logo">INSYDE</span>
             <div className="social-links">
@@ -343,11 +490,6 @@ function HomeAll() {
                 <Music2 size={20} />
               </a>
             </div>
-          </div>
-          <div className="ornament desktop-only">
-            <span className="dot"></span>
-            <span className="line"></span>
-            <span className="dot"></span>
           </div>
         </div>
       </footer>
